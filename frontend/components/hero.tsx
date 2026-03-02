@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import { AnimatedText } from './animated-text';
 
 export function Hero() {
   return (
@@ -11,10 +12,8 @@ export function Hero() {
           Discover Sri Lanka's Finest Restaurants
         </h1>
 
-        {/* Subheading with Multilingual Support */}
-        <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
-          AI-powered search to find the perfect restaurant. දුර්ගා සහ තරුණ සුවඳ සුසර්ගරbrunswik. खोजें परিपूर्ण रेस्तरां।
-        </p>
+        {/* Subheading with Animated Multilingual Text */}
+        <AnimatedText />
 
         {/* Search Bar */}
         <div className="flex gap-3 mb-12 max-w-xl mx-auto">
