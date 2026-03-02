@@ -85,11 +85,10 @@ export function FeaturedRestaurants() {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(restaurant.rating)
+                        className={`w-4 h-4 ${i < Math.floor(restaurant.rating)
                             ? 'fill-primary text-primary'
                             : 'text-muted-foreground'
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>

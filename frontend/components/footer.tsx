@@ -1,66 +1,49 @@
 'use client';
 
-export function Footer() {
-  const currentYear = new Date().getFullYear();
+import { Search } from 'lucide-react';
+import { AnimatedText } from './animated-text';
 
+export function Hero() {
   return (
-    <footer className="bg-background border-t border-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 font-bold text-lg mb-3">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white text-sm font-bold">
-                SE
-              </div>
-              <span>SL Eats Connect</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              AI-powered restaurant discovery for Sri Lanka.
-            </p>
-          </div>
+    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-5xl mx-auto text-center">
+        {/* Main Heading */}
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
+          Discover Sri Lanka's Finest Restaurants
+        </h1>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Home</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Restaurants</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
-            </ul>
-          </div>
+        {/* Subheading with Animated Multilingual Text */}
+        <AnimatedText />
 
-          {/* Support */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Support</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
-            </ul>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Follow Us</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Facebook</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Twitter</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">LinkedIn</a></li>
-            </ul>
-          </div>
+        {/* Search Bar */}
+        <div className="flex gap-3 mb-12 max-w-xl mx-auto">
+          <input
+            type="text"
+            placeholder="Search by cuisine, location, or restaurant name..."
+            className="flex-1 px-6 py-4 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          <button className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap">
+            <Search className="w-5 h-5" />
+            <span className="hidden sm:inline">Search</span>
+          </button>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border pt-8">
-          <p className="text-sm text-muted-foreground text-center">
-            &copy; {currentYear} SL Eats Connect. All rights reserved.
-          </p>
+        {/* Decorative Stats */}
+        <div className="grid grid-cols-3 gap-4 max-w-md mx-auto text-sm">
+          <div>
+            <div className="font-bold text-foreground text-lg">500+</div>
+            <div className="text-muted-foreground">Restaurants</div>
+          </div>
+          <div>
+            <div className="font-bold text-foreground text-lg">10K+</div>
+            <div className="text-muted-foreground">Reviews</div>
+          </div>
+          <div>
+            <div className="font-bold text-foreground text-lg">AI</div>
+            <div className="text-muted-foreground">Powered</div>
+          </div>
         </div>
       </div>
-    </footer>
+    </section>
   );
 }
