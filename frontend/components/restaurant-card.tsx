@@ -1,8 +1,9 @@
 'use client';
-
-import { Star } from 'lucide-react';
+import { Star, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 interface RestaurantCardProps {
+  id: string;
   name: string;
   cuisine: string;
   city: string;
@@ -14,6 +15,7 @@ interface RestaurantCardProps {
 }
 
 export function RestaurantCard({
+  id,
   name,
   cuisine,
   city,
@@ -32,13 +34,12 @@ export function RestaurantCard({
           alt={name}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
-        
-        {/* Open Now Badge */}
-        {isOpen && (
-          <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-            Open Now
-          </div>
-        )}
+        {/* Open/Closed Badge */}
+        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${
+          isOpen ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'
+        }`}>
+          {isOpen ? 'Open Now' : 'Closed'}
+        </div>
       </div>
 
       {/* Content */}
@@ -54,7 +55,10 @@ export function RestaurantCard({
         </div>
 
         {/* City */}
-        <p className="text-sm text-muted-foreground mb-3">{city}</p>
+        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
+          <MapPin size={14} />
+          <span>{city}</span>
+        </div>
 
         {/* Rating */}
         <div className="flex items-center gap-2 mb-3">
@@ -71,17 +75,20 @@ export function RestaurantCard({
               />
             ))}
           </div>
-          <span className="text-sm font-semibold text-foreground">{rating}</span>
+          <span className="text-sm font-semibold text-foreground">{rating.toFixed(1)}</span>
           <span className="text-sm text-muted-foreground">({reviews} reviews)</span>
         </div>
 
         {/* Price Range */}
-        <p className="text-sm text-muted-foreground mb-4">{priceRange}</p>
+        <p className="text-sm text-muted-foreground mb-4">Price: {priceRange}</p>
 
         {/* View Restaurant Button */}
-        <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity">
+        <Link
+          href={`/restaurants/${id}`}
+          className="block w-full text-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+        >
           View Restaurant
-        </button>
+        </Link>
       </div>
     </div>
   );
