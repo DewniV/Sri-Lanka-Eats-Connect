@@ -30,6 +30,14 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+      localStorage.setItem('sl_eats_user', JSON.stringify({
+  _id: data._id,
+  name: data.name,
+  email: data.email,
+  role: data.role,
+}));
+localStorage.setItem('sl_eats_token', data.token);
+
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
