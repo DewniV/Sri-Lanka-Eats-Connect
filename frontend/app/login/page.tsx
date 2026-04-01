@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
@@ -8,6 +8,10 @@ import { Footer } from '@/components/footer';
 
 export default function LoginPage() {
   const router = useRouter();
+    useEffect(() => {
+    const existing = localStorage.getItem('sl_eats_user');
+    if (existing) { router.push('/'); return; }
+  }, []);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

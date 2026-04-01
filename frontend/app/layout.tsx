@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { ChatWidget } from '@/components/ChatWidget'
+import { ChatWidgetWrapper } from '@/components/ChatWidgetWrapper'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <Analytics />
-        <ChatWidget />
+       <ChatWidgetWrapper />
       </body>
     </html>
   )
