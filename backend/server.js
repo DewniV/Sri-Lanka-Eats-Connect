@@ -14,6 +14,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/restaurants', require('./routes/restaurants'));
 app.use('/api/reservations', require('./routes/reservations'));
 app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/chatbot', require('./routes/chatbot'));
 
 app.get('/', (req, res) => {
   res.json({ message: '🍛 SL Eats Connect API is running!' });
