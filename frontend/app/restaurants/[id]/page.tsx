@@ -89,7 +89,7 @@ export default function RestaurantDetailPage() {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/reviews/${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`);
       if (res.ok) setReviews(await res.json());
     } catch { /* silently ignore */ }
   };
@@ -102,7 +102,7 @@ export default function RestaurantDetailPage() {
       const token = localStorage.getItem('sl_eats_token');
       const user = JSON.parse(localStorage.getItem('sl_eats_user') || 'null');
       if (!token) { setReviewError('Please log in to leave a review.'); return; }
-      const res = await fetch('http://localhost:5000/api/reviews', {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -127,7 +127,7 @@ export default function RestaurantDetailPage() {
   const fetchRestaurant = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/restaurants/${id}`);
+     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants/${id}`);
       if (!response.ok) throw new Error('Restaurant not found');
       const data = await response.json();
       setRestaurant(data.restaurant);
@@ -166,7 +166,7 @@ export default function RestaurantDetailPage() {
         language: 'en',
       };
 
-      const response = await fetch('http://localhost:5000/api/reservations', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

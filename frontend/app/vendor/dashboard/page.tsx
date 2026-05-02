@@ -65,7 +65,7 @@ export default function VendorDashboard() {
   const fetchVendorData = async (token: string) => {
     try {
       // Get vendor's restaurant
-      const rRes = await fetch('http://localhost:5000/api/restaurants', {
+      const rRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const allRestaurants: Restaurant[] = await rRes.json();
@@ -80,7 +80,7 @@ export default function VendorDashboard() {
       setRestaurant(vendorRestaurant);
 
       // Get reservations for this restaurant
-      const resRes = await fetch(`http://localhost:5000/api/reservations/restaurant/${vendorRestaurant._id}`, {
+     const resRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/restaurant/${vendorRestaurant._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await resRes.json();
@@ -96,8 +96,7 @@ export default function VendorDashboard() {
     const token = localStorage.getItem('sl_eats_token');
     setUpdating(id);
     try {
-      const res = await fetch(`http://localhost:5000/api/reservations/${id}`, {
-        method: 'PUT',
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${id}`, {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status })
       });

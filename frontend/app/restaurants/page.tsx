@@ -41,7 +41,7 @@ export default function RestaurantsPage() {
       if (filters?.cuisine && filters.cuisine !== 'All') params.append('cuisine', filters.cuisine);
       if (filters?.city && filters.city !== 'All') params.append('city', filters.city);
 
-      const url = `http://localhost:5000/api/restaurants${params.toString() ? '?' + params.toString() : ''}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/restaurants${params.toString() ? '?' + params.toString() : ''}`;
       const response = await fetch(url);
 
       if (!response.ok) throw new Error('Failed to fetch restaurants');

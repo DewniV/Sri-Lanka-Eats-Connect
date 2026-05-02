@@ -61,7 +61,7 @@ export default function ProfilePage() {
     setLoadingReservations(true);
     try {
       const token = localStorage.getItem('sl_eats_token');
-      const res = await fetch(`http://localhost:5000/api/reservations/customer/${user._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/customer/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
