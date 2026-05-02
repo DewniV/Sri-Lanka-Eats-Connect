@@ -14,19 +14,19 @@ const LANGUAGES: Record<Lang, { label: string; flag: string; greeting: string; p
   en: {
     label: 'EN',
     flag: '🇬🇧',
-    greeting: "Hello! I'm SL Eats Assistant 🍛\n\nI can help you discover restaurants in Sri Lanka and make reservations through conversation.\n\nTry asking: *\"Find me a romantic restaurant in Kandy\"* or *\"Book a table for 2 in Colombo tonight\"*",
+   greeting: "Hi there! I'm Nila 🍛 — your personal Sri Lanka food guide!\n\nI'd love to help you discover amazing restaurants and make reservations through conversation.\n\nTry asking: *\"Find me a romantic restaurant in Kandy\"* or *\"Book a table for 2 in Colombo tonight\"*",
     placeholder: 'Ask me about restaurants...',
   },
   si: {
     label: 'සි',
     flag: '🇱🇰',
-    greeting: "ආයුබෝවන්! මම SL Eats සහායක 🍛\n\nශ්‍රී ලංකාවේ අවන්හල් සොයා ගැනීමට සහ වෙන්කරවා ගැනීමට මට ඔබට උදව් කළ හැක.\n\nඋදාහරණ: *\"කැන්ඩියේ ආදර අවන්හලක් සොයන්න\"* හෝ *\"කොළඹ 2 දෙනෙකුට මේසයක් වෙන්කරවන්න\"*",
+   greeting: "ආයුබෝවන්! මම නිලා 🍛 — ඔබේ ශ්‍රී ලංකා ආහාර මාර්ගෝපදේශකයා!\n\nශ්‍රී ලංකාවේ අවන්හල් සොයා ගැනීමට සහ වෙන්කරවා ගැනීමට මට ඔබට උදව් කළ හැක.\n\nඋදාහරණ: *\"කැන්ඩියේ ආදර අවන්හලක් සොයන්න\"* හෝ *\"කොළඹ 2 දෙනෙකුට මේසයක් වෙන්කරවන්න\"*",
     placeholder: 'අවන්හල් ගැන අහන්න...',
   },
   ta: {
     label: 'த',
     flag: '🇱🇰',
-    greeting: "வணக்கம்! நான் SL Eats உதவியாளர் 🍛\n\nஇலங்கையில் உணவகங்களைக் கண்டுபிடிக்கவும், முன்பதிவு செய்யவும் உங்களுக்கு உதவ முடியும்.\n\nகேளுங்கள்: *\"கண்டியில் காதல் உணவகம் கண்டுபிடி\"* அல்லது *\"கொழும்பில் 2 பேருக்கு மேசை முன்பதிவு செய்\"*",
+    greeting: "வணக்கம்! நான் நிலா 🍛 — உங்கள் இலங்கை உணவு வழிகாட்டி!\n\nஇலங்கையில் உணவகங்களைக் கண்டுபிடிக்கவும், முன்பதிவு செய்யவும் உங்களுக்கு உதவ முடியும்.\n\nகேளுங்கள்: *\"கண்டியில் காதல் உணவகம் கண்டுபிடி\"* அல்லது *\"கொழும்பில் 2 பேருக்கு மேசை முன்பதிவு செய்\"*",
     placeholder: 'உணவகங்கள் பற்றி கேளுங்கள்...',
   },
 };
@@ -130,7 +130,7 @@ export function ChatWidget() {
               <Bot size={20} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-white font-semibold text-sm">SL Eats Assistant</h3>
+              <h3 className="text-white font-semibold text-sm">Nila 🍛</h3>
               <p className="text-white/70 text-xs">Find restaurants & reserve tables</p>
             </div>
 
