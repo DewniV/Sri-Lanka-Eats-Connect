@@ -105,7 +105,8 @@ const tools = [
 // Execute tool calls
 async function executeTool(toolName, args) {
   if (toolName === 'search_restaurants') {
-    const query = { isActive: true };
+    // Build query — do NOT filter by isActive so all restaurants are searchable
+    const query = {};
     if (args.city) query.city = new RegExp(args.city, 'i');
     if (args.cuisineType) query.cuisineType = new RegExp(args.cuisineType, 'i');
     if (args.priceRange) query.priceRange = args.priceRange;
@@ -113,13 +114,36 @@ async function executeTool(toolName, args) {
       query.$or = [
         { name: new RegExp(args.keyword, 'i') },
         { description: new RegExp(args.keyword, 'i') },
+        { city: new RegExp(args.keyword, 'i') },
+        { cuisineType: new RegExp(args.keyword, 'i') },
       ];
     }
 
-    const restaurants = await Restaurant.find(query).limit(5).lean();
+    const restaurants = await Restaurant.find(query).limit(6).lean();
 
     if (restaurants.length === 0) {
-      return { found: false, message: 'No restaurants found matching your criteria.' };
+      // Fallback: show all available restaurants
+      const allRestaurants = await Restaurant.find({}).limit(6).lean();
+      if (allRestaurants.length === 0) {
+        return { found: false, message: 'No restaurants are currently listed on the platform.' };
+      }
+      return {
+        found: true,
+        count: allRestaurants.length,
+        note: 'No exact match found — showing all available restaurants instead.',
+        restaurants: allRestaurants.map(r => ({
+          id: r._id.toString(),
+          name: r.name,
+          city: r.city,
+          cuisineType: r.cuisineType,
+          priceRange: r.priceRange,
+          averageRating: r.averageRating,
+          totalReviews: r.totalReviews,
+          description: r.description,
+          address: r.address,
+          phone: r.phone,
+        })),
+      };
     }
 
     return {
@@ -136,7 +160,6 @@ async function executeTool(toolName, args) {
         description: r.description,
         address: r.address,
         phone: r.phone,
-        isActive: r.isActive,
       })),
     };
   }
@@ -195,27 +218,36 @@ function buildSystemPrompt(language) {
     ta: 'நீங்கள் தமிழ் மொழியில் மட்டுமே பதில் அளிக்க வேண்டும். ALL your responses must be in Tamil script. Do not use English words except for restaurant names, addresses, and phone numbers.',
   };
 
-  return `You are SL Eats Assistant, a friendly AI chatbot for SL Eats Connect — a restaurant discovery and reservation platform for Sri Lanka.
+  return `You are Nila, the warm and enthusiastic food guide for SL Eats Connect — Sri Lanka's restaurant discovery platform. You love food, you love Sri Lanka, and you genuinely enjoy helping people find the perfect dining experience.
 
 LANGUAGE RULE: ${langInstructions[language] || langInstructions.en}
 
-Your primary goals:
-1. Help users discover restaurants in Sri Lanka (ALWAYS call search_restaurants tool when user asks for restaurants)
-2. Provide restaurant details and recommendations  
-3. Make table reservations through conversation
+YOUR PERSONALITY:
+- Warm, conversational, and genuinely enthusiastic about Sri Lankan food culture
+- Talk like a knowledgeable local friend giving advice, not a formal assistant
+- Show excitement about great restaurants ("Oh, you're going to love this one!", "This place is a hidden gem!")
+- Empathise with the user's needs ("A romantic dinner — how lovely! Let me find you something special 🌹")
+- Never sound robotic — always add a personal, human touch
+- Use emojis sparingly but naturally (🍛 🌟 📍 ❤️)
+
+YOUR PRIMARY GOALS:
+1. Help users discover restaurants in Sri Lanka — ALWAYS call search_restaurants when asked
+2. Give personalised, enthusiastic recommendations with context, not just a dry list
+3. Help make table reservations through natural conversation
 
 CRITICAL RULES:
 - ALWAYS use the search_restaurants tool when user asks to find, discover, or recommend any restaurant — never say you cannot search
-- When showing restaurants, list them with: name, cuisine type, price range, rating, and address
+- If no exact match is found, show what IS available and explain warmly ("I couldn't find exactly that, but here are some wonderful options!")
+- When showing restaurants, present them conversationally — highlight what makes each one special
 - Price ranges: budget = under LKR 1,000 per person, mid = LKR 1,000–5,000, upscale = LKR 5,000–15,000, fine dining = above LKR 15,000
-- For romantic dinners, suggest upscale or fine dining
-- To make a reservation, collect: customer name, party size, date and time (email and phone optional)
-- Always confirm reservation details before booking
-- After successful booking, confirm with all details
+- For romantic dinners, suggest upscale or fine dining and add a warm personal touch
+- To make a reservation, collect: customer name, party size, date and time (email and phone optional but helpful)
+- Always confirm reservation details in a friendly way before booking
+- After successful booking, celebrate with the user and wish them a wonderful meal
 
 Sri Lankan cities available: Colombo, Kandy, Galle, Negombo, Jaffna
 
-Be warm, friendly, and conversational. If the user asks something unrelated to restaurants, politely redirect them.`;
+If the user asks something unrelated to restaurants or food, gently and warmly redirect them back to what you do best.`;
 }
 
 // @route POST /api/chatbot/message
@@ -238,7 +270,7 @@ router.post('/message', async (req, res) => {
       messages,
       tools,
       tool_choice: 'auto',
-      temperature: 0.7,
+      temperature: 0.8,
       max_tokens: 1200,
     });
 
@@ -267,7 +299,7 @@ router.post('/message', async (req, res) => {
         messages,
         tools,
         tool_choice: 'auto',
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 1200,
       });
 
