@@ -25,71 +25,68 @@ export function RestaurantCard({
   isOpen,
   image = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=300&fit=crop'
 }: RestaurantCardProps) {
+  const priceLabel: Record<string, string> = {
+    budget: 'LKR < 1,000',
+    mid: 'LKR 1,000–5,000',
+    upscale: 'LKR 5,000–15,000',
+    fine: 'LKR 15,000+',
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-border">
-      {/* Image */}
-      <div className="relative h-48 bg-muted overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-        />
-        {/* Open/Closed Badge */}
-        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${
-          isOpen ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'
-        }`}>
-          {isOpen ? 'Open Now' : 'Closed'}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        {/* Restaurant Name */}
-        <h3 className="text-lg font-bold text-foreground mb-2">{name}</h3>
-
-        {/* Cuisine Badge */}
-        <div className="mb-3">
-          <span className="inline-block bg-secondary text-foreground px-3 py-1 rounded-full text-xs font-medium">
-            {cuisine}
-          </span>
-        </div>
-
-        {/* City */}
-        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-          <MapPin size={14} />
-          <span>{city}</span>
-        </div>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={16}
-                className={`${
-                  i < Math.floor(rating)
-                    ? 'fill-primary text-primary'
-                    : 'text-muted-foreground'
-                }`}
-              />
-            ))}
+    <Link href={`/restaurants/${id}`} className="group block">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-border hover:-translate-y-1">
+        {/* Image */}
+        <div className="relative h-52 bg-muted overflow-hidden">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          {/* Open/Closed Badge */}
+          <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+            isOpen ? 'bg-green-500/90 text-white' : 'bg-gray-500/80 text-white'
+          }`}>
+            {isOpen ? '● Open Now' : '● Closed'}
           </div>
-          <span className="text-sm font-semibold text-foreground">{rating.toFixed(1)}</span>
-          <span className="text-sm text-muted-foreground">({reviews} reviews)</span>
+          {/* Cuisine tag on image */}
+          <div className="absolute bottom-3 left-3">
+            <span className="bg-white/90 backdrop-blur-sm text-foreground px-3 py-1 rounded-full text-xs font-semibold">
+              {cuisine}
+            </span>
+          </div>
         </div>
 
-        {/* Price Range */}
-        <p className="text-sm text-muted-foreground mb-4">Price: {priceRange}</p>
+        {/* Content */}
+        <div className="p-5">
+          {/* Restaurant Name */}
+          <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">{name}</h3>
 
-        {/* View Restaurant Button */}
-        <Link
-          href={`/restaurants/${id}`}
-          className="block w-full text-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
-        >
-          View Restaurant
-        </Link>
+          {/* City */}
+          <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
+            <MapPin size={13} />
+            <span>{city}</span>
+          </div>
+
+          {/* Rating + Price row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Star size={15} className="fill-amber-400 text-amber-400" />
+              <span className="text-sm font-semibold text-foreground">{rating.toFixed(1)}</span>
+              <span className="text-xs text-muted-foreground">({reviews})</span>
+            </div>
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+              {priceLabel[priceRange] ?? priceRange}
+            </span>
+          </div>
+
+          {/* View button */}
+          <div className="mt-4 w-full text-center px-4 py-2.5 bg-primary/10 text-primary rounded-xl text-sm font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
+            View Restaurant →
+          </div>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

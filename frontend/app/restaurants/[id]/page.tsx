@@ -33,6 +33,14 @@ interface MenuItem {
   isAvailable: boolean;
 }
 
+interface Review {
+  _id: string;
+  customerName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 const PRICE_DISPLAY: Record<string, string> = {
   budget: '$',
   mid: '$$',
@@ -50,6 +58,15 @@ export default function RestaurantDetailPage() {
   const [error, setError] = useState('');
 
   // Reservation form state
+  // Reviews state
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewHover, setReviewHover] = useState(0);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     customerName: '',
@@ -64,8 +81,48 @@ export default function RestaurantDetailPage() {
   const [bookingError, setBookingError] = useState('');
 
   useEffect(() => {
-    if (id) fetchRestaurant();
+    if (id) {
+      fetchRestaurant();
+      fetchReviews();
+    }
   }, [id]);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/reviews/${id}`);
+      if (res.ok) setReviews(await res.json());
+    } catch { /* silently ignore */ }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    setReviewError('');
+    try {
+      const token = localStorage.getItem('sl_eats_token');
+      const user = JSON.parse(localStorage.getItem('sl_eats_user') || 'null');
+      if (!token) { setReviewError('Please log in to leave a review.'); return; }
+      const res = await fetch('http://localhost:5000/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          restaurant: id,
+          rating: reviewRating,
+          comment: reviewComment,
+          customerName: user?.name || 'Anonymous',
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to submit review');
+      setReviewSuccess(true);
+      setReviewComment('');
+      setReviewRating(5);
+      fetchReviews();
+    } catch {
+      setReviewError('Could not submit review. Please try again.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const fetchRestaurant = async () => {
     try {
@@ -398,6 +455,97 @@ export default function RestaurantDetailPage() {
                   </form>
                 )}
               </div>
+             </div>
+
+            {/* Reviews Section */}
+            <div className="mt-10">
+              <h2 className="text-xl font-bold text-foreground mb-6">Customer Reviews</h2>
+
+              {/* Review form */}
+              <div className="bg-muted/30 rounded-2xl border border-border p-6 mb-8">
+                <h3 className="font-semibold text-foreground mb-4">Leave a Review</h3>
+                {reviewSuccess ? (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                    ✓ Thank you for your review!
+                    <button onClick={() => setReviewSuccess(false)} className="ml-3 underline text-green-600">Write another</button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReviewSubmit} className="space-y-4">
+                    {reviewError && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">{reviewError}</div>
+                    )}
+                    {/* Star selector */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
+                      <div className="flex gap-1">
+                        {[1,2,3,4,5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewRating(star)}
+                            onMouseEnter={() => setReviewHover(star)}
+                            onMouseLeave={() => setReviewHover(0)}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              size={28}
+                              className={`transition-colors ${
+                                star <= (reviewHover || reviewRating)
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-muted-foreground'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                        <span className="ml-2 text-sm text-muted-foreground self-center">{reviewRating} / 5</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Comment</label>
+                      <textarea
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your dining experience..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none bg-white"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={submittingReview}
+                      className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
+                    >
+                      {submittingReview ? 'Submitting...' : 'Submit Review'}
+                    </button>
+                  </form>
+                )}
+              </div>
+
+              {/* Reviews list */}
+              {reviews.length === 0 ? (
+                <p className="text-muted-foreground text-sm">No reviews yet. Be the first to review!</p>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map((review) => (
+                    <div key={review._id} className="bg-white rounded-2xl border border-border p-5">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <div className="font-semibold text-foreground">{review.customerName || 'Anonymous'}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(review.createdAt).toLocaleDateString('en-LK', { dateStyle: 'medium' })}
+                          </div>
+                        </div>
+                        <div className="flex gap-0.5">
+                          {[1,2,3,4,5].map((s) => (
+                            <Star key={s} size={14} className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'} />
+                          ))}
+                        </div>
+                      </div>
+                      {review.comment && <p className="text-sm text-muted-foreground leading-relaxed">{review.comment}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

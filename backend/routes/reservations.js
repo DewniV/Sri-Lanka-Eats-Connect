@@ -23,6 +23,31 @@ router.get('/restaurant/:id', protect, async (req, res) => {
   }
 });
 
+// @route GET /api/reservations/customer/:id - Get reservations for a customer
+router.get('/customer/:id', protect, async (req, res) => {
+  try {
+    const reservations = await Reservation.find({ customer: req.params.id })
+      .populate('restaurant', 'name city')
+      .sort({ reservationDate: -1 });
+    // Normalise field names for the frontend
+    const formatted = reservations.map((r) => ({
+      _id: r._id,
+      restaurantId: r.restaurant,
+      date: r.reservationDate,
+      time: r.reservationDate
+        ? new Date(r.reservationDate).toLocaleTimeString('en-LK', { hour: '2-digit', minute: '2-digit' })
+        : '',
+      partySize: r.partySize,
+      status: r.status,
+      specialRequests: r.specialRequests,
+      createdAt: r.createdAt,
+    }));
+    res.json(formatted);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @route PUT /api/reservations/:id - Update reservation status
 router.put('/:id', protect, async (req, res) => {
   try {

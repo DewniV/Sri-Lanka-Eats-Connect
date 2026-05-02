@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { User, LogOut, ChevronDown, UtensilsCrossed } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { User, LogOut, ChevronDown, UtensilsCrossed, Menu, X } from 'lucide-react';
 
 interface AuthUser {
   _id: string;
@@ -14,8 +14,10 @@ interface AuthUser {
 export function Navigation() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -63,21 +65,32 @@ export function Navigation() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link href="/restaurants" className="text-foreground hover:text-primary transition-colors">
-              Restaurants
-            </Link>
-            <Link href="#about" className="text-foreground hover:text-primary transition-colors">
-              About
-            </Link>
+            {[['/', 'Home'], ['/restaurants', 'Restaurants']].map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                className={`text-sm font-medium transition-colors ${
+                  pathname === href ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
             {user?.role === 'vendor' && (
-              <Link href="/vendor/dashboard" className="text-foreground hover:text-primary transition-colors">
+              <Link href="/vendor/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Dashboard
               </Link>
             )}
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
 
           {/* Auth Section */}
           <div className="flex items-center gap-3">
@@ -116,7 +129,7 @@ export function Navigation() {
                         My Profile
                       </Link>
                       <Link
-                        href="/my-reservations"
+                        href="/profile"
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-gray-50 transition-colors"
                       >
@@ -154,6 +167,39 @@ export function Navigation() {
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white border-t border-border px-4 py-4 space-y-2">
+          {[['/', 'Home'], ['/restaurants', 'Restaurants']].map(([href, label]) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setMobileOpen(false)}
+              className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                pathname === href ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+          {user?.role === 'vendor' && (
+            <Link href="/vendor/dashboard" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted">
+              Dashboard
+            </Link>
+          )}
+          {!user && (
+            <div className="pt-2 flex gap-2">
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+                Login
+              </Link>
+              <Link href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2 bg-primary text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
