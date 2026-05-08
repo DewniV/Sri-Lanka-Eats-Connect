@@ -1,3 +1,8 @@
+/**
+ * SL Eats Connect — Database Seed Script
+ * Run once with: node seed.js
+ * Adds 50 restaurants (10 per city) to MongoDB
+ */
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -7,167 +12,68 @@ const Restaurant = require('./models/Restaurant');
 
 const MONGO_URI = process.env.MONGO_URI;
 
+const hours = { mon: '11:00-22:00', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-23:00', sat: '10:00-23:00', sun: '10:00-22:00' };
+
 const restaurants = [
-  {
-    name: 'Ministry of Crab',
-    description: 'Award-winning seafood restaurant located in the historic Dutch Hospital Shopping Precinct in Colombo. Famous for its giant Sri Lankan mud crabs cooked in a variety of styles.',
-    address: 'Dutch Hospital Shopping Precinct, Hospital Street, Colombo 01',
-    city: 'Colombo',
-    phone: '+94 11 234 2722',
-    email: 'info@ministryofcrab.com',
-    cuisineType: 'Seafood',
-    priceRange: 'fine',
-    coverImage: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-    averageRating: 4.8,
-    totalReviews: 256,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '12:00-22:30', tue: '12:00-22:30', wed: '12:00-22:30', thu: '12:00-22:30', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-22:30' }
-  },
-  {
-    name: 'Nuga Gama',
-    description: 'A traditional Sri Lankan village-themed restaurant inside the Cinnamon Grand Hotel. Offers authentic rice and curry buffets served on banana leaves in a beautiful outdoor setting.',
-    address: 'Cinnamon Grand Hotel, 77 Galle Road, Colombo 03',
-    city: 'Colombo',
-    phone: '+94 11 249 7777',
-    email: 'nugagama@cinnamonhotels.com',
-    cuisineType: 'Sri Lankan',
-    priceRange: 'upscale',
-    coverImage: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=400&fit=crop',
-    averageRating: 4.6,
-    totalReviews: 189,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '19:00-22:30', tue: '19:00-22:30', wed: '19:00-22:30', thu: '19:00-22:30', fri: '19:00-23:00', sat: '12:00-15:00,19:00-23:00', sun: '12:00-15:00,19:00-22:30' }
-  },
-  {
-    name: 'Palmyrah Restaurant',
-    description: 'Specialising in authentic Jaffna Tamil cuisine, Palmyrah is one of the few restaurants in Colombo offering traditional Northern Sri Lankan dishes including Jaffna crab curry and mutton rolls.',
-    address: 'Renuka City Hotel, 328 Galle Road, Colombo 03',
-    city: 'Colombo',
-    phone: '+94 11 257 3598',
-    email: 'info@palmyrahrestaurant.lk',
-    cuisineType: 'Jaffna Cuisine',
-    priceRange: 'mid',
-    coverImage: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&h=400&fit=crop',
-    averageRating: 4.5,
-    totalReviews: 143,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '11:00-22:00', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-22:30', sat: '11:00-22:30', sun: '11:00-22:00' }
-  },
-  {
-    name: 'The Gallery Café',
-    description: 'Set in a stunning colonial building designed by Geoffrey Bawa, The Gallery Café offers a fusion menu combining Sri Lankan and international flavours in a beautifully curated art gallery setting.',
-    address: '2 Alfred House Road, Colombo 03',
-    city: 'Colombo',
-    phone: '+94 11 258 2162',
-    email: 'info@gallerycafe.lk',
-    cuisineType: 'Fusion',
-    priceRange: 'upscale',
-    coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop',
-    averageRating: 4.7,
-    totalReviews: 312,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '11:00-23:00', tue: '11:00-23:00', wed: '11:00-23:00', thu: '11:00-23:00', fri: '11:00-23:30', sat: '11:00-23:30', sun: '11:00-23:00' }
-  },
-  {
-    name: 'Hotel de Pilawoos',
-    description: 'A Colombo institution since 1962, Pilawoos is famous for its kottu roti and late-night street food culture. A must-visit for an authentic local dining experience.',
-    address: '417 Galle Road, Colombo 03',
-    city: 'Colombo',
-    phone: '+94 11 236 5871',
-    email: 'info@pilawoos.lk',
-    cuisineType: 'Sri Lankan',
-    priceRange: 'budget',
-    coverImage: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&h=400&fit=crop',
-    averageRating: 4.4,
-    totalReviews: 521,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '06:00-02:00', tue: '06:00-02:00', wed: '06:00-02:00', thu: '06:00-02:00', fri: '06:00-03:00', sat: '06:00-03:00', sun: '06:00-02:00' }
-  },
-  {
-    name: 'Saffron',
-    description: 'An elegant Indian restaurant in Kandy offering rich Mughlai and South Indian cuisine. Known for its aromatic biryanis, butter chicken, and traditional tandoor dishes.',
-    address: '16 Dalada Veediya, Kandy',
-    city: 'Kandy',
-    phone: '+94 81 222 4444',
-    email: 'saffron@kandyeats.lk',
-    cuisineType: 'Indian',
-    priceRange: 'mid',
-    coverImage: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=400&fit=crop',
-    averageRating: 4.3,
-    totalReviews: 98,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '11:00-22:00', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-22:30', sat: '11:00-22:30', sun: '11:00-22:00' }
-  },
-  {
-    name: 'Pedlar\'s Inn Café',
-    description: 'A charming café in the heart of Galle Fort offering Sri Lankan breakfast, fresh seafood and Western dishes. Popular with tourists and locals alike for its relaxed atmosphere.',
-    address: '92 Pedlar Street, Galle Fort, Galle',
-    city: 'Galle',
-    phone: '+94 91 222 2138',
-    email: 'info@pedlarsinn.lk',
-    cuisineType: 'Café',
-    priceRange: 'mid',
-    coverImage: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=400&fit=crop',
-    averageRating: 4.5,
-    totalReviews: 167,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '08:00-21:00', tue: '08:00-21:00', wed: '08:00-21:00', thu: '08:00-21:00', fri: '08:00-21:30', sat: '08:00-21:30', sun: '08:00-21:00' }
-  },
-  {
-    name: 'Lords Restaurant',
-    description: 'A popular seafood and Sri Lankan cuisine restaurant in Negombo, known for its fresh catch of the day, prawn dishes and relaxed beachside atmosphere.',
-    address: '2 Carron Place, Negombo',
-    city: 'Negombo',
-    phone: '+94 31 222 3364',
-    email: 'lords@negomboeats.lk',
-    cuisineType: 'Seafood',
-    priceRange: 'mid',
-    coverImage: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-    averageRating: 4.2,
-    totalReviews: 134,
-    isActive: true,
-    isVerified: false,
-    openingHours: { mon: '11:00-22:00', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-22:30', sat: '11:00-22:30', sun: '11:00-22:00' }
-  },
-  {
-    name: 'Upali\'s by Nawaloka',
-    description: 'One of Colombo\'s most beloved traditional Sri Lankan restaurants, Upali\'s has been serving authentic rice and curry, hoppers, and string hoppers since 1983.',
-    address: '65 C.W.W. Kannangara Mawatha, Colombo 07',
-    city: 'Colombo',
-    phone: '+94 11 269 5646',
-    email: 'upalis@nawaloka.lk',
-    cuisineType: 'Sri Lankan',
-    priceRange: 'budget',
-    coverImage: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&h=400&fit=crop',
-    averageRating: 4.3,
-    totalReviews: 445,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '07:00-22:00', tue: '07:00-22:00', wed: '07:00-22:00', thu: '07:00-22:00', fri: '07:00-22:30', sat: '07:00-22:30', sun: '07:00-22:00' }
-  },
-  {
-    name: 'Harbour Room',
-    description: 'A fine dining restaurant at the Galle Face Hotel offering panoramic views of the Indian Ocean. Specialises in premium Sri Lankan seafood and international cuisine.',
-    address: 'Galle Face Hotel, 2 Kollupitiya Road, Colombo 03',
-    city: 'Colombo',
-    phone: '+94 11 254 1010',
-    email: 'harbourroom@gallefacehotel.com',
-    cuisineType: 'Fine Dining',
-    priceRange: 'fine',
-    coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop',
-    averageRating: 4.6,
-    totalReviews: 203,
-    isActive: true,
-    isVerified: true,
-    openingHours: { mon: '12:00-15:00,19:00-23:00', tue: '12:00-15:00,19:00-23:00', wed: '12:00-15:00,19:00-23:00', thu: '12:00-15:00,19:00-23:00', fri: '12:00-15:00,19:00-23:30', sat: '12:00-15:00,19:00-23:30', sun: '12:00-15:00,19:00-23:00' }
-  }
+  // ── COLOMBO (10) ──
+  { name: 'Ministry of Crab', description: 'World-famous crab restaurant set in the historic Dutch Hospital. Known for its giant Sri Lankan crabs cooked in bold, flavourful sauces.', address: 'Old Dutch Hospital, Colombo 01', city: 'Colombo', phone: '+94 11 234 2722', email: 'info@ministryofcrab.com', cuisineType: 'Seafood', priceRange: 'fine', coverImage: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', averageRating: 4.8, totalReviews: 312, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Nuga Gama', description: 'A village-themed restaurant under a giant banyan tree offering authentic Sri Lankan rice and curry in a magical outdoor setting.', address: 'Cinnamon Grand Hotel, Colombo 03', city: 'Colombo', phone: '+94 11 249 7437', email: 'nugagama@cinnamonhotels.com', cuisineType: 'Sri Lankan', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80', averageRating: 4.6, totalReviews: 198, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Nihonbashi', description: "Sri Lanka's finest Japanese restaurant, celebrated for its sushi, sashimi, and teppanyaki prepared by expert chefs.", address: '11 Galle Face Terrace, Colombo 03', city: 'Colombo', phone: '+94 11 232 3847', email: 'reservations@nihonbashi.lk', cuisineType: 'Japanese', priceRange: 'fine', coverImage: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=80', averageRating: 4.7, totalReviews: 145, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Lagoon', description: 'Elegant seafood dining at the Cinnamon Grand with panoramic views of the lagoon. Known for fresh lobster and grilled fish.', address: 'Cinnamon Grand Hotel, Colombo 03', city: 'Colombo', phone: '+94 11 249 7437', email: 'thelagoon@cinnamonhotels.com', cuisineType: 'Seafood', priceRange: 'fine', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.5, totalReviews: 167, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Upali's by Nawaloka", description: 'A beloved institution for authentic Sri Lankan cuisine. Famous for its hoppers, kottu, and traditional rice and curry buffet.', address: '65 C W W Kannangara Mawatha, Colombo 07', city: 'Colombo', phone: '+94 11 269 5796', email: 'info@upalis.lk', cuisineType: 'Sri Lankan', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.4, totalReviews: 289, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Café Français', description: 'A charming French bistro in the heart of Colombo serving classic French pastries, crepes, and hearty mains in a cosy setting.', address: '28 Flower Road, Colombo 07', city: 'Colombo', phone: '+94 11 269 1500', email: 'info@cafefrancais.lk', cuisineType: 'French', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', averageRating: 4.3, totalReviews: 112, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Mango Tree', description: 'Vibrant North Indian restaurant known for its tandoori specialties, rich curries, and warm hospitality in a lively atmosphere.', address: 'Bagatelle Road, Colombo 03', city: 'Colombo', phone: '+94 11 230 0500', email: 'info@mangotree.lk', cuisineType: 'Indian', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80', averageRating: 4.2, totalReviews: 203, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Burger's King Colombo", description: 'A popular local burger joint serving juicy gourmet burgers, loaded fries, and thick milkshakes. Great for a casual meal.', address: '42 Duplication Road, Colombo 04', city: 'Colombo', phone: '+94 11 250 0123', email: 'hello@burgerskingcolombo.lk', cuisineType: 'Burgers', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80', averageRating: 4.0, totalReviews: 178, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Palmyrah Restaurant', description: 'Authentic Jaffna cuisine brought to Colombo. Renowned for its crab curry, mutton rolls, and traditional Jaffna string hoppers.', address: 'Havelock City, Colombo 05', city: 'Colombo', phone: '+94 11 259 0000', email: 'palmyrah@havelockcity.lk', cuisineType: 'Jaffna', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=800&q=80', averageRating: 4.5, totalReviews: 134, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Smoke & Barrel', description: 'A trendy BBQ and craft beer bar in Colombo. Slow-smoked meats, wood-fired pizzas, and an impressive selection of local craft beers.', address: '7 Layards Road, Colombo 05', city: 'Colombo', phone: '+94 77 123 4567', email: 'hello@smokeandbarrel.lk', cuisineType: 'BBQ', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', averageRating: 4.3, totalReviews: 156, isActive: true, isVerified: true, openingHours: hours },
+
+  // ── KANDY (10) ──
+  { name: 'The Empire Café', description: 'A heritage café in the heart of Kandy town serving Sri Lankan breakfast, hoppers, and fresh juices with a colonial-era charm.', address: '21 Temple Street, Kandy', city: 'Kandy', phone: '+94 81 222 4444', email: 'info@empirecafe.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80', averageRating: 4.2, totalReviews: 98, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Slightly Chilled', description: 'A rooftop restaurant with stunning views of Kandy Lake. Known for its wood-fired pizzas, pasta, and refreshing cocktails.', address: 'Kandy Lake View, Kandy', city: 'Kandy', phone: '+94 81 222 3399', email: 'info@slightlychilled.lk', cuisineType: 'Italian', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', averageRating: 4.4, totalReviews: 143, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Kandy Club', description: 'A historic fine dining restaurant in a colonial building near the Temple of the Tooth. Elegant atmosphere with Sri Lankan and continental cuisine.', address: '5 Sangaraja Mawatha, Kandy', city: 'Kandy', phone: '+94 81 222 3866', email: 'reservations@kandyclub.lk', cuisineType: 'Continental', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.5, totalReviews: 87, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Devon Restaurant', description: 'A Kandy institution for over 50 years. Famous for its Sri Lankan rice and curry, string hoppers, and freshly made sweets.', address: '11 Dalada Veediya, Kandy', city: 'Kandy', phone: '+94 81 222 6836', email: 'devon@kandy.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.1, totalReviews: 211, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Helga's Folly", description: 'A one-of-a-kind eccentric restaurant inside a legendary boutique hotel. Extraordinary decor, great cocktails, and a truly unique dining experience.', address: '32 Frederick E de Silva Mawatha, Kandy', city: 'Kandy', phone: '+94 81 223 4571', email: 'info@helgasfolly.com', cuisineType: 'Continental', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', averageRating: 4.6, totalReviews: 76, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Flower Song Chinese Restaurant', description: 'The most popular Chinese restaurant in Kandy, beloved for its dim sum, fried rice, and noodle dishes at very reasonable prices.', address: '137 Kotugodella Veediya, Kandy', city: 'Kandy', phone: '+94 81 222 0895', email: 'flowersong@kandy.lk', cuisineType: 'Chinese', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&q=80', averageRating: 4.0, totalReviews: 167, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Thilanka Hotel Restaurant', description: 'A hilltop restaurant with panoramic views of Kandy city. Serves a wide buffet of Sri Lankan and international dishes.', address: '3 Sangamitta Mawatha, Kandy', city: 'Kandy', phone: '+94 81 222 3459', email: 'info@thilankahotel.com', cuisineType: 'Sri Lankan', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80', averageRating: 4.2, totalReviews: 122, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Balaji Dosai', description: 'An authentic South Indian vegetarian restaurant famous for its crispy dosas, fluffy idlis, and flavourful sambar.', address: '11 Goods Shed Road, Kandy', city: 'Kandy', phone: '+94 81 222 7777', email: 'balajidosai@kandy.lk', cuisineType: 'South Indian', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=800&q=80', averageRating: 4.3, totalReviews: 189, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Pub Kandy', description: 'A lively pub-style restaurant in central Kandy serving burgers, grills, and a wide selection of beverages in a relaxed atmosphere.', address: '36 Dalada Veediya, Kandy', city: 'Kandy', phone: '+94 81 222 3768', email: 'thepub@kandy.lk', cuisineType: 'Pub Grub', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', averageRating: 4.0, totalReviews: 134, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Kandyan View Restaurant', description: 'A scenic restaurant on the hills above Kandy offering traditional Sri Lankan meals with breathtaking views of the Kandy valley.', address: 'Rajapihilla Mawatha, Kandy', city: 'Kandy', phone: '+94 81 222 9900', email: 'kandyanview@gmail.com', cuisineType: 'Sri Lankan', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', averageRating: 4.4, totalReviews: 95, isActive: true, isVerified: true, openingHours: hours },
+
+  // ── GALLE (10) ──
+  { name: 'The Fortaleza', description: 'A stunning rooftop restaurant inside Galle Fort with sweeping ocean views. Serves fresh seafood, Sri Lankan classics, and international dishes.', address: '28 Church Street, Galle Fort', city: 'Galle', phone: '+94 91 224 8000', email: 'info@fortaleza.lk', cuisineType: 'Seafood', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.7, totalReviews: 203, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Pedlar's Inn Café", description: 'A charming café inside Galle Fort serving light meals, sandwiches, freshly baked goods, and excellent coffee in a relaxed colonial setting.', address: '92 Pedlar Street, Galle Fort', city: 'Galle', phone: '+94 91 224 7534', email: 'pedlarsinn@galle.lk', cuisineType: 'Café', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80', averageRating: 4.3, totalReviews: 156, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Serendipity Arts Café', description: 'An art gallery and café combined, offering creative fusion dishes, homemade ice cream, and a rotating exhibition of local artwork.', address: '65 Leyn Baan Street, Galle Fort', city: 'Galle', phone: '+94 91 224 6111', email: 'info@serendipityarts.lk', cuisineType: 'Fusion', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', averageRating: 4.5, totalReviews: 118, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Old Dutch Hospital Galle', description: 'A beautifully restored Dutch colonial building housing multiple restaurants and bars. Perfect for sundowners and fresh seafood.', address: 'Hospital Street, Galle Fort', city: 'Galle', phone: '+94 91 222 2222', email: 'info@dutchhospitalgalle.lk', cuisineType: 'Continental', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', averageRating: 4.4, totalReviews: 134, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Mama's Galle Fort Roof Café", description: 'A family-run rooftop café with incredible views of the Galle Fort ramparts. Known for fresh juices, rice and curry, and warm hospitality.', address: '19 Rampart Street, Galle Fort', city: 'Galle', phone: '+94 77 888 9900', email: 'mamas@gallecafe.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80', averageRating: 4.2, totalReviews: 178, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Tuna & The Crab', description: 'A lively seafood restaurant on the Galle Fort ramparts. Famous for its tuna steaks, crab dishes, and spectacular sunset views.', address: 'Rampart Street, Galle Fort', city: 'Galle', phone: '+94 91 224 6456', email: 'info@tunaandcrab.lk', cuisineType: 'Seafood', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', averageRating: 4.6, totalReviews: 221, isActive: true, isVerified: true, openingHours: hours },
+  { name: "Poonie's Kitchen", description: 'A cosy home-style restaurant run by a local family. Authentic Sri Lankan rice and curry, devilled dishes, and fresh seafood at budget prices.', address: '43 Middle Street, Galle Fort', city: 'Galle', phone: '+94 77 345 6789', email: 'poonies@galle.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.1, totalReviews: 89, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Amangalla Dining Room', description: 'The restaurant of the legendary Amangalla hotel. Exquisite fine dining in a 17th century colonial building with impeccable service.', address: '10 Church Street, Galle Fort', city: 'Galle', phone: '+94 91 223 3388', email: 'galle@aman.com', cuisineType: 'Fine Dining', priceRange: 'fine', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.9, totalReviews: 67, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Galle Fort Hotel Restaurant', description: 'A boutique hotel restaurant serving creative Sri Lankan and Mediterranean fusion dishes in a beautifully restored colonial courtyard.', address: '28 Church Street, Galle Fort', city: 'Galle', phone: '+94 91 223 0870', email: 'info@galleforthotel.com', cuisineType: 'Fusion', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', averageRating: 4.5, totalReviews: 112, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Lucky Fort Restaurant', description: 'A no-frills local favourite just outside the fort walls. Generous portions of rice and curry, kottu, and fresh seafood at very affordable prices.', address: 'Wakwella Road, Galle', city: 'Galle', phone: '+94 91 222 5678', email: 'luckyfort@galle.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=800&q=80', averageRating: 4.0, totalReviews: 145, isActive: true, isVerified: true, openingHours: hours },
+
+  // ── NEGOMBO (10) ──
+  { name: 'Lords Restaurant', description: 'A beachfront institution in Negombo serving the freshest seafood caught daily by local fishermen. Famous for its grilled prawns and lobster.', address: 'Lewis Place, Negombo', city: 'Negombo', phone: '+94 31 222 3364', email: 'lords@negombo.lk', cuisineType: 'Seafood', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', averageRating: 4.5, totalReviews: 234, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Icebear Restaurant', description: 'A popular beachside restaurant and bar known for its relaxed vibe, fresh seafood, wood-fired pizzas, and stunning sunset views.', address: 'Poruthota Road, Negombo', city: 'Negombo', phone: '+94 31 227 9000', email: 'info@icebear.lk', cuisineType: 'Seafood', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.3, totalReviews: 187, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Bijou Restaurant', description: 'A charming family restaurant in Negombo offering a mix of Sri Lankan, Chinese, and continental dishes in a friendly, relaxed setting.', address: '26 Carron Place, Negombo', city: 'Negombo', phone: '+94 31 222 4000', email: 'bijou@negombo.lk', cuisineType: 'Multi-Cuisine', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', averageRating: 4.1, totalReviews: 143, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Rodeo Pub & Restaurant', description: 'A lively pub and grill in Negombo with live music on weekends. Known for its BBQ platters, burgers, and wide selection of drinks.', address: 'Poruthota Road, Negombo', city: 'Negombo', phone: '+94 31 227 5500', email: 'rodeo@negombo.lk', cuisineType: 'BBQ', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', averageRating: 4.0, totalReviews: 112, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Dolce Vita', description: 'An Italian-inspired beachfront restaurant serving authentic pasta, risotto, and thin-crust pizzas with fresh local ingredients.', address: 'Lewis Place Beach, Negombo', city: 'Negombo', phone: '+94 31 222 6677', email: 'dolcevita@negombo.lk', cuisineType: 'Italian', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', averageRating: 4.4, totalReviews: 98, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Rasa Bojun Negombo', description: 'A government-run restaurant chain known for its authentic Sri Lankan rice and curry buffet at very affordable prices. Always fresh and delicious.', address: 'Main Street, Negombo', city: 'Negombo', phone: '+94 31 222 1234', email: 'rasabojun@negombo.lk', cuisineType: 'Sri Lankan', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.2, totalReviews: 267, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Beach Hut', description: 'A casual beachfront shack serving fresh fish, prawns, and squid grilled to order. The perfect spot for a laid-back lunch by the sea.', address: 'Poruthota Beach, Negombo', city: 'Negombo', phone: '+94 77 456 7890', email: 'beachhut@negombo.lk', cuisineType: 'Seafood', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80', averageRating: 4.1, totalReviews: 178, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Kingfisher Restaurant', description: 'A well-established restaurant near the Negombo lagoon specialising in fresh lagoon fish, crab, and traditional Sri Lankan curries.', address: 'Lagoon Road, Negombo', city: 'Negombo', phone: '+94 31 222 8800', email: 'kingfisher@negombo.lk', cuisineType: 'Seafood', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.3, totalReviews: 156, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Spice Garden Negombo', description: 'A spice garden restaurant offering cooking demonstrations and authentic Sri Lankan meals made with freshly harvested spices from their own garden.', address: 'Waikkal Road, Negombo', city: 'Negombo', phone: '+94 31 227 1100', email: 'spicegarden@negombo.lk', cuisineType: 'Sri Lankan', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80', averageRating: 4.5, totalReviews: 89, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Sunset Grill Negombo', description: 'A rooftop grill restaurant with panoramic views of the Indian Ocean. Specialises in grilled meats, fresh seafood, and tropical cocktails.', address: 'Ethukala, Negombo', city: 'Negombo', phone: '+94 31 227 9900', email: 'sunsetgrill@negombo.lk', cuisineType: 'Grill', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', averageRating: 4.4, totalReviews: 123, isActive: true, isVerified: true, openingHours: hours },
+
+  // ── JAFFNA (10) ──
+  { name: 'Rio Ice Cream & Restaurant', description: 'A legendary Jaffna institution famous for its unique ice cream flavours and authentic Jaffna cuisine including crab curry and mutton rolls.', address: 'Hospital Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 2222', email: 'rio@jaffna.lk', cuisineType: 'Jaffna', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.6, totalReviews: 312, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Mangos Restaurant', description: 'A popular restaurant in Jaffna town known for its generous portions of traditional Jaffna rice and curry, kottu, and fresh seafood.', address: 'KKS Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 5678', email: 'mangos@jaffna.lk', cuisineType: 'Jaffna', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=800&q=80', averageRating: 4.3, totalReviews: 198, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Cosy Restaurant', description: 'A cosy family restaurant in central Jaffna serving authentic Tamil cuisine including string hoppers, pittu, and traditional Jaffna crab curry.', address: 'Stanley Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 3344', email: 'cosy@jaffna.lk', cuisineType: 'Tamil', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=800&q=80', averageRating: 4.2, totalReviews: 167, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Jaffna Heritage Hotel Restaurant', description: 'The restaurant of the Jaffna Heritage Hotel offering a refined dining experience with authentic Jaffna cuisine and panoramic lagoon views.', address: 'Jaffna Lagoon, Jaffna', city: 'Jaffna', phone: '+94 21 222 9000', email: 'dining@jaffnaheritage.lk', cuisineType: 'Jaffna', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', averageRating: 4.5, totalReviews: 89, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Green Grass Hotel Restaurant', description: 'A well-known hotel restaurant in Jaffna serving traditional Jaffna meals. Famous for its breakfast string hoppers and evening rice and curry.', address: '3 Kandy Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 1111', email: 'greengrass@jaffna.lk', cuisineType: 'Jaffna', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80', averageRating: 4.1, totalReviews: 134, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Malayan Café', description: 'A historic café in Jaffna town that has been serving the community for decades. Known for its fresh string hoppers, dosas, and strong Ceylon tea.', address: 'Main Street, Jaffna', city: 'Jaffna', phone: '+94 21 222 4455', email: 'malayancafe@jaffna.lk', cuisineType: 'Tamil', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80', averageRating: 4.4, totalReviews: 223, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Thalsevana Holiday Resort Restaurant', description: 'A beachfront resort restaurant in Jaffna offering fresh seafood, Jaffna specialties, and a relaxed atmosphere by the sea.', address: 'Palaly Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 6600', email: 'thalsevana@jaffna.lk', cuisineType: 'Seafood', priceRange: 'mid', coverImage: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', averageRating: 4.3, totalReviews: 112, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Sarras Restaurant', description: 'A beloved local restaurant in Jaffna known for its authentic Jaffna-style mutton curry, devilled dishes, and freshly made short eats.', address: 'Nallur Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 7788', email: 'sarras@jaffna.lk', cuisineType: 'Jaffna', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80', averageRating: 4.2, totalReviews: 178, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'Nallur Kandha Vilas', description: 'A pure vegetarian restaurant near the famous Nallur Kandaswamy Temple. Serves traditional Tamil vegetarian meals, thali, and sweets.', address: 'Nallur Temple Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 8899', email: 'nallurvilas@jaffna.lk', cuisineType: 'Vegetarian', priceRange: 'budget', coverImage: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80', averageRating: 4.4, totalReviews: 145, isActive: true, isVerified: true, openingHours: hours },
+  { name: 'The Point Restaurant', description: 'A modern restaurant in Jaffna with a contemporary take on traditional Tamil cuisine. Great for special occasions with its elegant decor and attentive service.', address: 'Point Pedro Road, Jaffna', city: 'Jaffna', phone: '+94 21 222 9988', email: 'thepoint@jaffna.lk', cuisineType: 'Tamil', priceRange: 'upscale', coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', averageRating: 4.5, totalReviews: 78, isActive: true, isVerified: true, openingHours: hours }
 ];
 
 async function seed() {
