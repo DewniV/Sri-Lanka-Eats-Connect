@@ -1,6 +1,6 @@
 'use client';
+
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 
 const FAQS = [
   {
@@ -17,7 +17,7 @@ const FAQS = [
   },
   {
     q: 'Can I cancel or modify a reservation?',
-    a: 'Yes. Go to your Profile → Reservations tab, find the booking, and click "Cancel". We recommend cancelling at least 2 hours before your reservation time as a courtesy to the restaurant.',
+    a: 'Yes. Go to your Profile, find the booking under Reservations, and click "Cancel". We recommend cancelling at least 2 hours before your reservation time as a courtesy to the restaurant.',
   },
   {
     q: 'How does the AI chatbot (Nila) work?',
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: 'Does Nila only know about restaurants in the database?',
-    a: 'Yes. Nila only recommends restaurants that are listed and verified on SL Eats Connect. This ensures every suggestion is accurate and up to date. If your favourite spot isn\'t listed yet, ask the owner to register as a vendor!',
+    a: 'Yes. Nila only recommends restaurants that are listed and verified on SL Eats Connect. This ensures every suggestion is accurate and up to date. If your favourite spot isn\'t listed yet, ask the owner to register as a vendor.',
   },
   {
     q: 'How do I list my restaurant on SL Eats Connect?',
@@ -33,7 +33,7 @@ const FAQS = [
   },
   {
     q: 'Is the platform available in Sinhala and Tamil?',
-    a: 'The Nila chatbot supports English, Sinhala (සිංහල), and Tamil (தமிழ்). You can switch languages using the flag button inside the chat window. Full website localisation is on our roadmap.',
+    a: 'The Nila chatbot supports English, Sinhala, and Tamil. You can switch languages using the flag button inside the chat window. Full website localisation is on our roadmap.',
   },
 ];
 
@@ -56,45 +56,29 @@ export function FAQ() {
 
         {/* Accordion */}
         <div className="space-y-3">
-          {FAQS.map((faq, i) => {
-            const isOpen = openIndex === i;
-            return (
-              <div
-                key={i}
-                className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-                  isOpen ? 'border-primary/40 shadow-sm' : 'border-border'
-                }`}
+          {FAQS.map((faq, i) => (
+            <div
+              key={i}
+              className="border border-border rounded-2xl overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted/40 transition-colors"
               >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left gap-4 hover:bg-muted/30 transition-colors"
-                >
-                  <span className={`font-semibold text-sm sm:text-base ${isOpen ? 'text-primary' : 'text-foreground'}`}>
-                    {faq.q}
-                  </span>
-                  <ChevronDown
-                    size={18}
-                    className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : 'text-muted-foreground'}`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="mt-10 text-center">
-          <p className="text-muted-foreground text-sm">
-            Still have questions?{' '}
-            <a href="mailto:support@sleatsconnect.lk" className="text-primary font-semibold hover:underline">
-              Contact our support team
-            </a>
-          </p>
+                <span className={`font-semibold text-sm sm:text-base ${openIndex === i ? 'text-primary' : 'text-foreground'}`}>
+                  {faq.q}
+                </span>
+                <span className={`ml-4 flex-shrink-0 text-xl font-light transition-transform duration-200 ${openIndex === i ? 'rotate-45 text-primary' : 'text-muted-foreground'}`}>
+                  +
+                </span>
+              </button>
+              {openIndex === i && (
+                <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border pt-4">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
