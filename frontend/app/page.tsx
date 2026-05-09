@@ -1,3 +1,4 @@
+'use client';
 import { Navigation } from '@/components/navigation';
 import { Hero } from '@/components/hero';
 import { HowItWorks } from '@/components/how-it-works';
