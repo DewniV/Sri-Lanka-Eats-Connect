@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Star, MapPin, Phone, Mail, Clock, ChevronLeft, Users } from 'lucide-react';
+import { Star, MapPin, Phone, Mail, Clock, ChevronLeft, Users, Heart } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 
@@ -24,6 +24,9 @@ interface Restaurant {
   isActive: boolean;
   isVerified: boolean;
   openingHours: Record<string, string>;
+  availableTables?: number;
+  totalTables?: number;
+  availabilityNote?: string;
 }
 
 interface MenuItem {
@@ -41,7 +44,11 @@ interface Review {
   rating: number;
   comment: string;
   createdAt: string;
+  vendorReply?: string;
+  vendorReplyAt?: string;
 }
+
+const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const PRICE_DISPLAY: Record<string, string> = {
   budget: '$',
@@ -58,6 +65,10 @@ export default function RestaurantDetailPage() {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Favourite state
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -86,9 +97,34 @@ export default function RestaurantDetailPage() {
     if (id) {
       fetchRestaurant();
       fetchReviews();
+      checkFavourite();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const checkFavourite = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('sl_eats_favourites') || '[]') as string[];
+      setIsFavourite(saved.includes(id));
+    } catch { /* ignore */ }
+  };
+
+  const toggleFavourite = () => {
+    setFavLoading(true);
+    try {
+      const saved = JSON.parse(localStorage.getItem('sl_eats_favourites') || '[]') as string[];
+      let updated: string[];
+      if (saved.includes(id)) {
+        updated = saved.filter((fid) => fid !== id);
+        setIsFavourite(false);
+      } else {
+        updated = [...saved, id];
+        setIsFavourite(true);
+      }
+      localStorage.setItem('sl_eats_favourites', JSON.stringify(updated));
+    } catch { /* ignore */ }
+    setFavLoading(false);
+  };
 
   const fetchReviews = async () => {
     try {
@@ -241,16 +277,34 @@ export default function RestaurantDetailPage() {
             <Link href="/restaurants" className="inline-flex items-center gap-1 text-white/80 hover:text-white text-sm mb-3 transition-colors">
               <ChevronLeft size={16} /> Back to restaurants
             </Link>
-            <h1 className="text-3xl md:text-4xl font-bold text-white">{restaurant.name}</h1>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
-              <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{restaurant.cuisineType}</span>
-              <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{PRICE_DISPLAY[restaurant.priceRange] || '$$'}</span>
-              {restaurant.isActive && (
-                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Open Now</span>
-              )}
-              {restaurant.isVerified && (
-                <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">✓ Verified</span>
-              )}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white">{restaurant.name}</h1>
+                <div className="flex items-center gap-3 mt-2 flex-wrap">
+                  <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{restaurant.cuisineType}</span>
+                  <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{PRICE_DISPLAY[restaurant.priceRange] || '$$'}</span>
+                  {restaurant.isActive && (
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Open Now</span>
+                  )}
+                  {restaurant.isVerified && (
+                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">✓ Verified</span>
+                  )}
+                </div>
+              </div>
+              {/* Favourite button */}
+              <button
+                onClick={toggleFavourite}
+                disabled={favLoading}
+                title={isFavourite ? 'Remove from favourites' : 'Save to favourites'}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
+                  isFavourite
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                <Heart size={16} className={isFavourite ? 'fill-white' : ''} />
+                {isFavourite ? 'Saved' : 'Save'}
+              </button>
             </div>
           </div>
         </div>
@@ -280,6 +334,36 @@ export default function RestaurantDetailPage() {
                 </div>
               )}
 
+              {/* Table Availability */}
+              {typeof restaurant.availableTables === 'number' && (
+                <div className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
+                  restaurant.availableTables === 0
+                    ? 'border-red-200 bg-red-50'
+                    : 'border-green-200 bg-green-50'
+                }`}>
+                  <div className={`text-2xl font-bold ${
+                    restaurant.availableTables === 0 ? 'text-red-600' : 'text-green-600'
+                  }`}>
+                    {restaurant.availableTables === 0 ? '🔴' : '🟢'}
+                  </div>
+                  <div>
+                    <div className={`font-semibold text-sm ${
+                      restaurant.availableTables === 0 ? 'text-red-700' : 'text-green-700'
+                    }`}>
+                      {restaurant.availableTables === 0
+                        ? 'Fully Booked Right Now'
+                        : `${restaurant.availableTables} table${restaurant.availableTables !== 1 ? 's' : ''} available`}
+                    </div>
+                    {restaurant.totalTables && (
+                      <div className="text-xs text-gray-500">out of {restaurant.totalTables} total tables</div>
+                    )}
+                    {restaurant.availabilityNote && (
+                      <div className="text-xs text-gray-600 mt-0.5 italic">{restaurant.availabilityNote}</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Contact info */}
               <div>
                 <h2 className="text-xl font-bold text-foreground mb-4">Contact & Location</h2>
@@ -304,6 +388,69 @@ export default function RestaurantDetailPage() {
                   )}
                 </div>
               </div>
+
+              {/* Opening Hours */}
+              {restaurant.openingHours && Object.keys(restaurant.openingHours).length > 0 && (() => {
+                const entries = DAY_ORDER
+                  .map(day => ({ day, hours: restaurant.openingHours[day] || restaurant.openingHours[day.toLowerCase()] || null }))
+                  .filter(e => e.hours);
+                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                if (entries.length === 0) return null;
+                return (
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                      <Clock size={20} className="text-primary" /> Opening Hours
+                    </h2>
+                    <div className="rounded-xl border border-border overflow-hidden">
+                      {entries.map(({ day, hours }) => (
+                        <div
+                          key={day}
+                          className={`flex justify-between items-center px-4 py-2.5 text-sm border-b border-border last:border-0 ${
+                            day === today ? 'bg-primary/5 font-semibold' : ''
+                          }`}
+                        >
+                          <span className={day === today ? 'text-primary' : 'text-foreground'}>
+                            {day === today ? `${day} (Today)` : day}
+                          </span>
+                          <span className={day === today ? 'text-primary' : 'text-muted-foreground'}>{hours}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Google Maps */}
+              {(() => {
+                const mapsQuery = encodeURIComponent(`${restaurant.address || restaurant.name}, ${restaurant.city}, Sri Lanka`);
+                return (
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                      <MapPin size={20} className="text-primary" /> Find Us
+                    </h2>
+                    <div className="rounded-xl overflow-hidden border border-border shadow-sm">
+                      <iframe
+                        title={`Map for ${restaurant.name}`}
+                        src={`https://maps.google.com/maps?q=${mapsQuery}&output=embed&z=15`}
+                        width="100%"
+                        height="300"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
+                    >
+                      <MapPin size={14} /> Open in Google Maps ↗
+                    </a>
+                  </div>
+                );
+              })()}
 
               {/* Menu */}
               {menu.length > 0 && (
@@ -550,6 +697,21 @@ export default function RestaurantDetailPage() {
                         </div>
                       </div>
                       {review.comment && <p className="text-sm text-muted-foreground leading-relaxed">{review.comment}</p>}
+
+                      {/* Vendor reply */}
+                      {review.vendorReply && (
+                        <div className="mt-3 ml-4 p-3 bg-gray-50 border-l-4 border-primary rounded-r-lg text-sm text-gray-700">
+                          <div className="font-semibold text-xs text-primary mb-1">
+                            Restaurant reply
+                            {review.vendorReplyAt && (
+                              <span className="text-gray-400 font-normal ml-2">
+                                · {new Date(review.vendorReplyAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                            )}
+                          </div>
+                          <p>{review.vendorReply}</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

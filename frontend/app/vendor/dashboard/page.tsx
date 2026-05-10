@@ -49,6 +49,8 @@ interface Review {
   rating: number;
   comment: string;
   createdAt: string;
+  vendorReply?: string;
+  vendorReplyAt?: string;
 }
 
 type Tab = 'overview' | 'reservations' | 'reviews' | 'availability' | 'edit';
@@ -84,6 +86,11 @@ export default function VendorDashboard() {
     availabilityNote: '',
   });
   const [availSaving, setAvailSaving] = useState(false);
+
+  // Vendor reply state — keyed by review._id
+  const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
+  const [replyOpen, setReplyOpen] = useState<Record<string, boolean>>({});
+  const [replySaving, setReplySaving] = useState<Record<string, boolean>>({});
 
   const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
@@ -196,6 +203,33 @@ export default function VendorDashboard() {
       setError(err instanceof Error ? err.message : 'Failed to update availability');
     } finally {
       setAvailSaving(false);
+    }
+  };
+
+  // Submit vendor reply to a review
+  const handleReplySubmit = async (reviewId: string) => {
+    const reply = (replyDrafts[reviewId] || '').trim();
+    if (!reply) return;
+    setReplySaving(prev => ({ ...prev, [reviewId]: true }));
+    try {
+      const res = await fetch(`${API}/api/reviews/${reviewId}/reply`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ reply }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to save reply');
+      setReviews(prev => prev.map(r => r._id === reviewId ? { ...r, vendorReply: reply, vendorReplyAt: new Date().toISOString() } : r));
+      setReplyOpen(prev => ({ ...prev, [reviewId]: false }));
+      setReplyDrafts(prev => ({ ...prev, [reviewId]: '' }));
+      setMessage('Reply posted successfully!');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to post reply');
+    } finally {
+      setReplySaving(prev => ({ ...prev, [reviewId]: false }));
     }
   };
 
@@ -560,6 +594,71 @@ export default function VendorDashboard() {
                       </div>
                     </div>
                     {r.comment && <p className="text-sm text-gray-600 mt-2">{r.comment}</p>}
+
+                    {/* Existing vendor reply */}
+                    {r.vendorReply && (
+                      <div className="mt-3 ml-4 p-3 bg-gray-50 border-l-4 rounded-r-lg text-sm text-gray-700"
+                        style={{ borderLeftColor: 'oklch(0.585 0.22 29.234)' }}>
+                        <div className="font-semibold text-xs mb-1" style={{ color: 'oklch(0.585 0.22 29.234)' }}>
+                          Your reply
+                          {r.vendorReplyAt && (
+                            <span className="text-gray-400 font-normal ml-2">
+                              · {new Date(r.vendorReplyAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                          )}
+                        </div>
+                        <p>{r.vendorReply}</p>
+                        <button
+                          onClick={() => {
+                            setReplyDrafts(prev => ({ ...prev, [r._id]: r.vendorReply || '' }));
+                            setReplyOpen(prev => ({ ...prev, [r._id]: true }));
+                          }}
+                          className="text-xs text-gray-400 hover:text-gray-600 mt-1 underline"
+                        >
+                          Edit reply
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Reply toggle button (only if no reply yet) */}
+                    {!r.vendorReply && !replyOpen[r._id] && (
+                      <button
+                        onClick={() => setReplyOpen(prev => ({ ...prev, [r._id]: true }))}
+                        className="mt-2 text-xs font-medium hover:underline"
+                        style={{ color: 'oklch(0.585 0.22 29.234)' }}
+                      >
+                        ↩ Reply to this review
+                      </button>
+                    )}
+
+                    {/* Reply input box */}
+                    {replyOpen[r._id] && (
+                      <div className="mt-3 ml-4">
+                        <textarea
+                          value={replyDrafts[r._id] || ''}
+                          onChange={e => setReplyDrafts(prev => ({ ...prev, [r._id]: e.target.value }))}
+                          rows={3}
+                          placeholder="Write a professional, friendly reply to this review…"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                        />
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            onClick={() => handleReplySubmit(r._id)}
+                            disabled={replySaving[r._id] || !(replyDrafts[r._id] || '').trim()}
+                            className="px-4 py-1.5 text-xs text-white rounded-lg font-medium transition-opacity disabled:opacity-50"
+                            style={{ backgroundColor: 'oklch(0.585 0.22 29.234)' }}
+                          >
+                            {replySaving[r._id] ? 'Posting…' : 'Post Reply'}
+                          </button>
+                          <button
+                            onClick={() => setReplyOpen(prev => ({ ...prev, [r._id]: false }))}
+                            className="px-4 py-1.5 text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
