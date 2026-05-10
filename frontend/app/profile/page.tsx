@@ -6,6 +6,8 @@ import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { User, Mail, Shield, Calendar, Clock, MapPin, ChevronRight, LogOut, Star, Gift, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 interface AuthUser {
   _id: string;
   name: string;
@@ -39,8 +41,8 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 function getTier(balance: number) {
-  if (balance >= 1500) return { name: 'VIP', color: 'text-purple-600', bg: 'bg-purple-100', next: null, progress: 100 };
-  if (balance >= 500)  return { name: 'Regular', color: 'text-primary', bg: 'bg-primary/10', next: 1500, progress: Math.round(((balance - 500) / 1000) * 100) };
+  if (balance >= 1000) return { name: 'VIP', color: 'text-purple-600', bg: 'bg-purple-100', next: null, progress: 100 };
+  if (balance >= 500)  return { name: 'Regular', color: 'text-primary', bg: 'bg-primary/10', next: 1000, progress: Math.round(((balance - 500) / 500) * 100) };
   return { name: 'Foodie', color: 'text-amber-600', bg: 'bg-amber-100', next: 500, progress: Math.round((balance / 500) * 100) };
 }
 
@@ -66,6 +68,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (activeTab === 'reservations' && user) fetchReservations();
     if (activeTab === 'points' && user) fetchPoints();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, user]);
 
   const fetchReservations = async () => {
@@ -127,8 +130,16 @@ export default function ProfilePage() {
     );
   }
 
+  const isVendor = user.role === 'vendor';
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
   const tier = getTier(pointsBalance);
+
+  // Tabs — vendors don't see Eats Points
+  const tabs = [
+    { id: 'info' as const, label: 'Personal Info' },
+    { id: 'reservations' as const, label: 'My Reservations' },
+    ...(!isVendor ? [{ id: 'points' as const, label: 'Eats Points' }] : []),
+  ];
 
   return (
     <main className="min-h-screen bg-muted/30">
@@ -158,15 +169,15 @@ export default function ProfilePage() {
 
         {/* Tabs */}
         <div className="flex gap-1 bg-white border border-border rounded-xl p-1 mb-6 w-fit">
-          {(['info', 'reservations', 'points'] as const).map((tab) => (
+          {tabs.map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                activeTab === tab ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                activeTab === tab.id ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {tab === 'info' ? 'Personal Info' : tab === 'reservations' ? 'My Reservations' : 'Eats Points'}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -190,6 +201,19 @@ export default function ProfilePage() {
                 <ChevronRight size={16} className="text-muted-foreground" />
               </div>
             ))}
+
+            {/* Vendor shortcut */}
+            {isVendor && (
+              <div className="px-6 py-5">
+                <a
+                  href="/vendor/dashboard"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: 'oklch(0.585 0.22 29.234)' }}
+                >
+                  Go to Vendor Dashboard →
+                </a>
+              </div>
+            )}
           </div>
         )}
 
@@ -247,8 +271,8 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Tab: Eats Points */}
-        {activeTab === 'points' && (
+        {/* Tab: Eats Points — customers only */}
+        {activeTab === 'points' && !isVendor && (
           <div className="space-y-5">
             {loadingPoints ? (
               <div className="flex items-center justify-center py-16">
@@ -282,6 +306,20 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+                    {[
+                      { tier: 'Foodie', range: '0 – 499 pts', color: 'text-amber-600', bg: 'bg-amber-50' },
+                      { tier: 'Regular', range: '500 – 999 pts', color: 'text-primary', bg: 'bg-primary/5' },
+                      { tier: 'VIP', range: '1,000+ pts', color: 'text-purple-600', bg: 'bg-purple-50' },
+                    ].map(t => (
+                      <div key={t.tier} className={`rounded-xl p-2 ${t.bg}`}>
+                        <div className={`font-bold ${t.color}`}>{t.tier}</div>
+                        <div className="text-muted-foreground">{t.range}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">Points expire 12 months after they are earned.</p>
                 </div>
 
                 {/* Redeem card */}
