@@ -46,9 +46,11 @@ export default function RestaurantsPage() {
 
       if (!response.ok) throw new Error('Failed to fetch restaurants');
 
-      const data = await response.json();
-      setRestaurants(data);
-      setFilteredRestaurants(data);
+const data = await response.json();
+const list = Array.isArray(data) ? data : (data.restaurants || []);
+setRestaurants(list);
+setFilteredRestaurants(list);
+
     } catch (err) {
       setError('Could not load restaurants. Please make sure the backend server is running.');
       console.error(err);
