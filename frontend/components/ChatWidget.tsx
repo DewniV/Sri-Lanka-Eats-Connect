@@ -1,7 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Bot, User, Loader2, Globe } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,19 +13,19 @@ const LANGUAGES: Record<Lang, { label: string; flag: string; greeting: string; p
   en: {
     label: 'EN',
     flag: '🇬🇧',
-    greeting: "Hi there! I'm Nila 🍛 — your personal Sri Lanka food guide!\n\nI'd love to help you discover amazing restaurants and make reservations through conversation.\n\nTry asking: *\"Find me a romantic restaurant in Kandy\"* or *\"Book a table for 2 in Colombo tonight\"*",
+    greeting: "Hi there! I'm Nila 🍛 — your personal Sri Lanka food guide!\n\nI'd love to help you discover amazing restaurants and make reservations through conversation.\n\nTry asking: \"Find me a romantic restaurant in Kandy\" or \"Book a table for 2 in Colombo tonight\"",
     placeholder: 'Ask me about restaurants...',
   },
   si: {
     label: 'සි',
     flag: '🇱🇰',
-    greeting: "ආයුබෝවන්! මම නිලා 🍛 — ඔබේ ශ්‍රී ලංකා ආහාර මාර්ගෝපදේශකයා!\n\nශ්‍රී ලංකාවේ අවන්හල් සොයා ගැනීමට සහ වෙන්කරවා ගැනීමට මට ඔබට උදව් කළ හැක.\n\nඋදාහරණ: *\"කැන්ඩියේ ආදර අවන්හලක් සොයන්න\"* හෝ *\"කොළඹ 2 දෙනෙකුට මේසයක් වෙන්කරවන්න\"*",
+    greeting: "ආයුබෝවන්! මම නිලා 🍛 — ඔබේ ශ්‍රී ලංකා ආහාර මාර්ගෝපදේශකයා!\n\nශ්‍රී ලංකාවේ අවන්හල් සොයා ගැනීමට සහ වෙන්කරවා ගැනීමට මට ඔබට උදව් කළ හැක.\n\nඋදාහරණ: \"කැන්ඩියේ ආදර අවන්හලක් සොයන්න\" හෝ \"කොළඹ 2 දෙනෙකුට මේසයක් වෙන්කරවන්න\"",
     placeholder: 'අවන්හල් ගැන අහන්න...',
   },
   ta: {
     label: 'த',
     flag: '🇱🇰',
-    greeting: "வணக்கம்! நான் நிலா 🍛 — உங்கள் இலங்கை உணவு வழிகாட்டி!\n\nஇலங்கையில் உணவகங்களைக் கண்டுபிடிக்கவும், முன்பதிவு செய்யவும் உங்களுக்கு உதவ முடியும்.\n\nகேளுங்கள்: *\"கண்டியில் காதல் உணவகம் கண்டுபிடி\"* அல்லது *\"கொழும்பில் 2 பேருக்கு மேசை முன்பதிவு செய்\"*",
+    greeting: "வணக்கம்! நான் நிலா 🍛 — உங்கள் இலங்கை உணவு வழிகாட்டி!\n\nஇலங்கையில் உணவகங்களைக் கண்டுபிடிக்கவும், முன்பதிவு செய்யவும் உங்களுக்கு உதவ முடியும்.\n\nகேளுங்கள்: \"கண்டியில் காதல் உணவகம் கண்டுபிடி\" அல்லது \"கொழும்பில் 2 பேருக்கு மேசை முன்பதிவு செய்\"",
     placeholder: 'உணவகங்கள் பற்றி கேளுங்கள்...',
   },
 };
@@ -36,6 +35,20 @@ const SUGGESTED: Record<Lang, string[]> = {
   si: ['කැන්ඩියේ ආදර අවන්හලක්', 'කොළඹ හොඳම මුහුදු ආහාර', 'ගාල්ලේ අඩු මිල ආහාර'],
   ta: ['கண்டியில் காதல் உணவகம்', 'கொழும்பில் கடல் உணவு', 'காலியில் மலிவு உணவு'],
 };
+
+// Simple text renderer — splits on newlines and renders paragraphs
+// No external dependencies needed
+function SimpleText({ content }: { content: string }) {
+  if (!content) return null;
+  const paragraphs = content.split('\n').filter(line => line.trim() !== '');
+  return (
+    <div className="space-y-1">
+      {paragraphs.map((para, i) => (
+        <p key={i} className="text-sm leading-relaxed">{para}</p>
+      ))}
+    </div>
+  );
+}
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -204,18 +217,7 @@ export function ChatWidget() {
                     : 'bg-white text-gray-800 rounded-tl-sm border border-gray-100'
                 }`}>
                   {msg.role === 'assistant' ? (
-                    <ReactMarkdown
-                      components={{
-                        p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                        strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                        em: ({ children }) => <em className="italic">{children}</em>,
-                        ul: ({ children }) => <ul className="list-disc pl-4 space-y-1 mt-1">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-4 space-y-1 mt-1">{children}</ol>,
-                        li: ({ children }) => <li>{children}</li>,
-                      }}
-                    >
-                      {msg.content}
-                    </ReactMarkdown>
+                    <SimpleText content={msg.content} />
                   ) : (
                     msg.content
                   )}
