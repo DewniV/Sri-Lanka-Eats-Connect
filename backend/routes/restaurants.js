@@ -1,164 +1,154 @@
-const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
-const Restaurant = require('../models/Restaurant');
+'use client';
+import { useState, useEffect } from 'react';
+import { Navigation } from '@/components/navigation';
+import { Footer } from '@/components/footer';
+import { SearchFilterBar } from '@/components/search-filter-bar';
+import { RestaurantCard } from '@/components/restaurant-card';
 
-// Auth middleware
-const protect = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Not authorised' });
-  }
-  try {
-    const token = authHeader.split(' ')[1];
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    next();
-  } catch {
-    res.status(401).json({ message: 'Invalid token' });
-  }
-};
+export const dynamic = 'force-dynamic';
 
-// Vendor-only middleware
-const vendorOnly = (req, res, next) => {
-  if (req.user.role !== 'vendor') {
-    return res.status(403).json({ message: 'Vendor access required' });
-  }
-  next();
-};
+interface Restaurant {
+  _id: string;
+  name: string;
+  cuisineType: string;
+  city: string;
+  averageRating: number;
+  totalReviews: number;
+  priceRange: string;
+  coverImage: string;
+  isActive: boolean;
+  description: string;
+  address: string;
+}
 
-// @route GET /api/restaurants
-// Public — list all active restaurants with optional filters
-router.get('/', async (req, res) => {
-  try {
-    const { city, cuisineType, priceRange, search, page = 1, limit = 12 } = req.query;
-    const query = {};
+export default function RestaurantsPage() {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [activeFilters, setActiveFilters] = useState({ query: '', cuisine: 'All', city: 'All' });
 
-    if (city) query.city = new RegExp(city, 'i');
-    if (cuisineType) query.cuisineType = new RegExp(cuisineType, 'i');
-    if (priceRange) query.priceRange = priceRange;
-    if (search) {
-      query.$or = [
-        { name: new RegExp(search, 'i') },
-        { description: new RegExp(search, 'i') },
-        { city: new RegExp(search, 'i') },
-        { cuisineType: new RegExp(search, 'i') },
-      ];
+  // Fetch all restaurants from backend on page load
+  useEffect(() => {
+    fetchRestaurants();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchRestaurants = async (filters?: { query: string; cuisine: string; city: string }) => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const params = new URLSearchParams();
+      if (filters?.query) params.append('search', filters.query);
+      if (filters?.cuisine && filters.cuisine !== 'All') params.append('cuisine', filters.cuisine);
+      if (filters?.city && filters.city !== 'All') params.append('city', filters.city);
+
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/restaurants${params.toString() ? '?' + params.toString() : ''}`;
+      const response = await fetch(url);
+
+      if (!response.ok) throw new Error('Failed to fetch restaurants');
+
+      const data = await response.json();
+
+      // Backend returns either a plain array OR { restaurants: [...], total: N }
+      // Handle both formats safely
+      const list: Restaurant[] = Array.isArray(data) ? data : (data.restaurants || []);
+
+      setRestaurants(list);
+      setFilteredRestaurants(list);
+    } catch (err) {
+      setError('Could not load restaurants. Please make sure the backend server is running.');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const [restaurants, total] = await Promise.all([
-      Restaurant.find(query).skip(skip).limit(parseInt(limit)).lean(),
-      Restaurant.countDocuments(query),
-    ]);
+  const handleSearch = (filters: { query: string; cuisine: string; city: string }) => {
+    setActiveFilters(filters);
+    fetchRestaurants(filters);
+  };
 
-    res.json({ restaurants, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+  // Suppress unused variable warning for activeFilters
+  void activeFilters;
 
+  // Map priceRange from DB values to display symbols
+  const getPriceDisplay = (priceRange: string) => {
+    const map: Record<string, string> = {
+      budget: '$',
+      mid: '$$',
+      upscale: '$$$',
+      fine: '$$$$'
+    };
+    return map[priceRange] || '$$';
+  };
 
-// @route GET /api/restaurants/vendor/mine
-// Vendor — get the restaurant(s) owned by the logged-in vendor
-router.get('/vendor/mine', protect, vendorOnly, async (req, res) => {
-  try {
-    const restaurants = await Restaurant.find({ owner: req.user.id }).lean();
-    res.json(restaurants);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+  return (
+    <main className="min-h-screen bg-white">
+      <Navigation />
+      <div className="pt-16">
+        <SearchFilterBar onSearch={handleSearch} />
 
-// @route GET /api/restaurants/:id
-// Public — get a single restaurant by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const restaurant = await Restaurant.findById(req.params.id).lean();
-    if (!restaurant) return res.status(404).json({ message: 'Restaurant not found' });
-    res.json(restaurant);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+        {/* Restaurant Grid */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
+          {/* Loading state */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <span className="ml-4 text-muted-foreground">Loading restaurants...</span>
+            </div>
+          )}
 
-// @route PUT /api/restaurants/:id
-// Vendor — update restaurant details (name, description, address, etc.)
-router.put('/:id', protect, vendorOnly, async (req, res) => {
-  try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    if (!restaurant) return res.status(404).json({ message: 'Restaurant not found' });
-    if (restaurant.owner.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorised to edit this restaurant' });
-    }
+          {/* Error state */}
+          {!loading && error && (
+            <div className="text-center py-12">
+              <p className="text-lg text-red-500">{error}</p>
+              <button
+                onClick={() => fetchRestaurants()}
+                className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:opacity-90"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
 
-    const allowedFields = [
-      'name', 'description', 'address', 'city', 'phone', 'email',
-      'cuisineType', 'priceRange', 'openingHours', 'coverImage',
-      'totalTables', 'isActive',
-    ];
+          {/* Results */}
+          {!loading && !error && (
+            <>
+              <p className="text-muted-foreground mb-6">
+                Showing {filteredRestaurants.length} restaurant{filteredRestaurants.length !== 1 ? 's' : ''}
+              </p>
 
-    allowedFields.forEach(field => {
-      if (req.body[field] !== undefined) restaurant[field] = req.body[field];
-    });
-
-    await restaurant.save();
-    res.json(restaurant);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// @route PATCH /api/restaurants/:id/availability
-// Vendor — update table availability (availableTables, availabilityNote)
-// This is the real-time availability update endpoint used by the vendor dashboard
-router.patch('/:id/availability', protect, vendorOnly, async (req, res) => {
-  try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    if (!restaurant) return res.status(404).json({ message: 'Restaurant not found' });
-    if (restaurant.owner.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorised to update this restaurant' });
-    }
-
-    const { availableTables, availabilityNote, totalTables } = req.body;
-
-    if (totalTables !== undefined) {
-      const newTotal = parseInt(totalTables);
-      if (isNaN(newTotal) || newTotal < 0) {
-        return res.status(400).json({ message: 'totalTables must be a non-negative number' });
-      }
-      restaurant.totalTables = newTotal;
-    }
-
-    if (availableTables !== undefined) {
-      const newAvail = parseInt(availableTables);
-      if (isNaN(newAvail) || newAvail < 0) {
-        return res.status(400).json({ message: 'availableTables must be a non-negative number' });
-      }
-      if (newAvail > restaurant.totalTables) {
-        return res.status(400).json({ message: `availableTables (${newAvail}) cannot exceed totalTables (${restaurant.totalTables})` });
-      }
-      restaurant.availableTables = newAvail;
-    }
-
-    if (availabilityNote !== undefined) {
-      restaurant.availabilityNote = availabilityNote.trim();
-    }
-
-    restaurant.lastAvailabilityUpdate = new Date();
-    await restaurant.save();
-
-    res.json({
-      success: true,
-      restaurantId: restaurant._id,
-      totalTables: restaurant.totalTables,
-      availableTables: restaurant.availableTables,
-      availabilityNote: restaurant.availabilityNote,
-      lastAvailabilityUpdate: restaurant.lastAvailabilityUpdate,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-module.exports = router;
+              {filteredRestaurants.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredRestaurants.map(restaurant => (
+                    <RestaurantCard
+                      key={restaurant._id}
+                      id={restaurant._id}
+                      name={restaurant.name}
+                      cuisine={restaurant.cuisineType}
+                      city={restaurant.city}
+                      rating={restaurant.averageRating}
+                      reviews={restaurant.totalReviews}
+                      priceRange={getPriceDisplay(restaurant.priceRange)}
+                      isOpen={restaurant.isActive}
+                      image={restaurant.coverImage}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-lg text-muted-foreground">No restaurants found matching your criteria.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters.</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </main>
+  );
+}
