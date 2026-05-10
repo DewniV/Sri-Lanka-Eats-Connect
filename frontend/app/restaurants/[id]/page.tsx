@@ -6,6 +6,8 @@ import { Star, MapPin, Phone, Mail, Clock, ChevronLeft, Users } from 'lucide-rea
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 
+export const dynamic = 'force-dynamic';
+
 interface Restaurant {
   _id: string;
   name: string;
@@ -57,7 +59,6 @@ export default function RestaurantDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Reservation form state
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewRating, setReviewRating] = useState(5);
@@ -67,6 +68,7 @@ export default function RestaurantDetailPage() {
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [reviewError, setReviewError] = useState('');
 
+  // Reservation form state
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     customerName: '',
@@ -85,6 +87,7 @@ export default function RestaurantDetailPage() {
       fetchRestaurant();
       fetchReviews();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchReviews = async () => {
@@ -92,6 +95,32 @@ export default function RestaurantDetailPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`);
       if (res.ok) setReviews(await res.json());
     } catch { /* silently ignore */ }
+  };
+
+  const fetchRestaurant = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants/${id}`);
+      if (!response.ok) throw new Error('Restaurant not found');
+      const data = await response.json();
+
+      // Backend returns the restaurant object directly (not wrapped in { restaurant: ... })
+      // Handle both formats safely just in case
+      const restaurantData = data.restaurant ? data.restaurant : data;
+      const menuData = data.menu || [];
+
+      setRestaurant(restaurantData);
+      setMenu(menuData);
+    } catch (err) {
+      setError('Could not load restaurant details.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -102,7 +131,7 @@ export default function RestaurantDetailPage() {
       const token = localStorage.getItem('sl_eats_token');
       const user = JSON.parse(localStorage.getItem('sl_eats_user') || 'null');
       if (!token) { setReviewError('Please log in to leave a review.'); return; }
-     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -124,33 +153,13 @@ export default function RestaurantDetailPage() {
     }
   };
 
-  const fetchRestaurant = async () => {
-    try {
-      setLoading(true);
-     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants/${id}`);
-      if (!response.ok) throw new Error('Restaurant not found');
-      const data = await response.json();
-      setRestaurant(data.restaurant);
-      setMenu(data.menu || []);
-    } catch (err) {
-      setError('Could not load restaurant details.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   const handleReservationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setBookingError('');
 
     try {
-      // Get logged-in user from localStorage if available
-      const userStr = localStorage.getItem('user');
+      const userStr = localStorage.getItem('sl_eats_user');
       const user = userStr ? JSON.parse(userStr) : null;
 
       const payload = {
@@ -178,8 +187,8 @@ export default function RestaurantDetailPage() {
       setBookingSuccess(true);
       setShowForm(false);
       setFormData({ customerName: '', customerEmail: '', customerPhone: '', partySize: '2', reservationDate: '', specialRequests: '' });
-    } catch (err: any) {
-      setBookingError(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      setBookingError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -455,10 +464,10 @@ export default function RestaurantDetailPage() {
                   </form>
                 )}
               </div>
-             </div>
+            </div>
 
-            {/* Reviews Section */}
-            <div className="mt-10">
+            {/* Reviews Section — full width below */}
+            <div className="lg:col-span-3 mt-10">
               <h2 className="text-xl font-bold text-foreground mb-6">Customer Reviews</h2>
 
               {/* Review form */}
@@ -474,7 +483,6 @@ export default function RestaurantDetailPage() {
                     {reviewError && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">{reviewError}</div>
                     )}
-                    {/* Star selector */}
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
                       <div className="flex gap-1">
