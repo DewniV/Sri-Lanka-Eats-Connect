@@ -57,6 +57,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+// @route GET /api/restaurants/vendor/mine
+// Vendor — get the restaurant(s) owned by the logged-in vendor
+router.get('/vendor/mine', protect, vendorOnly, async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find({ owner: req.user.id }).lean();
+    res.json(restaurants);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @route GET /api/restaurants/:id
 // Public — get a single restaurant by ID
 router.get('/:id', async (req, res) => {
@@ -69,16 +81,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route GET /api/restaurants/vendor/mine
-// Vendor — get the restaurant(s) owned by the logged-in vendor
-router.get('/vendor/mine', protect, vendorOnly, async (req, res) => {
-  try {
-    const restaurants = await Restaurant.find({ owner: req.user.id }).lean();
-    res.json(restaurants);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 // @route PUT /api/restaurants/:id
 // Vendor — update restaurant details (name, description, address, etc.)
