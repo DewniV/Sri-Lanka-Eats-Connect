@@ -2,6 +2,7 @@ const express = require('express');
 const cors    = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const restaurantRoutes = require('./routes/restaurants');
 
 connectDB();
 
@@ -16,6 +17,7 @@ app.use('/api/reservations', require('./routes/reservations'));
 app.use('/api/reviews',      require('./routes/reviews'));
 app.use('/api/points',       require('./routes/points'));
 app.use('/api/chatbot',      require('./routes/chatbot'));
+app.use('/api/restaurants', restaurantRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: '🍜 SL Eats Connect API is running!' });

@@ -15,7 +15,12 @@ const restaurantSchema = new mongoose.Schema({
   isActive:      { type: Boolean, default: true },
   isVerified:    { type: Boolean, default: false },
   averageRating: { type: Number, default: 0 },
-  totalReviews:  { type: Number, default: 0 }
+  totalReviews:  { type: Number, default: 0 },
+  // Table availability
+  totalTables:     { type: Number, default: 10 },
+  availableTables: { type: Number, default: 10 },
+  availabilityNote: { type: String, default: '' }, // e.g. "Fully booked Friday evening"
+  lastAvailabilityUpdate: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Restaurant', restaurantSchema);
