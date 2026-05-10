@@ -211,9 +211,13 @@ export default function RestaurantDetailPage() {
         language: 'en',
       };
 
+      const token = localStorage.getItem('sl_eats_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(payload),
       });
 
