@@ -8,10 +8,13 @@ import { Footer } from '@/components/footer';
 
 export default function LoginPage() {
   const router = useRouter();
-    useEffect(() => {
+
+  useEffect(() => {
     const existing = localStorage.getItem('sl_eats_user');
     if (existing) { router.push('/'); return; }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,21 +37,19 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-      localStorage.setItem('sl_eats_user', JSON.stringify({
-  _id: data._id,
-  name: data.name,
-  email: data.email,
-  role: data.role,
-}));
-localStorage.setItem('sl_eats_token', data.token);
-
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify({ _id: data._id, name: data.name, email: data.email, role: data.role }));
+      // Save user and token with consistent key names used across the whole app
+      localStorage.setItem('sl_eats_user', JSON.stringify({
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+      }));
+      localStorage.setItem('sl_eats_token', data.token);
 
       if (data.role === 'vendor') {
         router.push('/vendor/dashboard');
@@ -57,8 +58,8 @@ localStorage.setItem('sl_eats_token', data.token);
       } else {
         router.push('/restaurants');
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
