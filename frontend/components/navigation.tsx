@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, LogOut, ChevronDown, UtensilsCrossed, Menu, X } from 'lucide-react';
+import { User, LogOut, ChevronDown, UtensilsCrossed, Menu, X, Heart, ShieldCheck } from 'lucide-react';
 
 interface AuthUser {
   _id: string;
@@ -50,6 +50,9 @@ export function Navigation() {
     router.push('/');
   };
 
+  // Safe initial — never crashes even if name is undefined
+  const userInitial = (user?.name || '?').charAt(0).toUpperCase();
+
   return (
     <nav className="fixed top-0 w-full bg-white border-b border-border z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,6 +84,16 @@ export function Navigation() {
                 Dashboard
               </Link>
             )}
+            {user?.role === 'customer' && (
+              <Link href="/favourites" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                Favourites
+              </Link>
+            )}
+            {user?.role === 'admin' && (
+              <Link href="/admin" className="text-sm font-medium text-primary font-semibold hover:opacity-80 transition-colors">
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -102,10 +115,10 @@ export function Navigation() {
                   className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-semibold">
-                    {user.name.charAt(0).toUpperCase()}
+                    {userInitial}
                   </div>
                   <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
-                    {user.name}
+                    {user.name || user.email}
                   </span>
                   <ChevronDown size={14} className={`text-gray-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -113,7 +126,7 @@ export function Navigation() {
                 {dropdownOpen && (
                   <div className="absolute right-0 top-12 bg-white rounded-xl shadow-xl border border-border w-52 overflow-hidden">
                     <div className="px-4 py-3 border-b border-border">
-                      <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                      <p className="text-sm font-semibold text-foreground truncate">{user.name || 'User'}</p>
                       <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       <span className="inline-block mt-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full capitalize">
                         {user.role}
@@ -136,6 +149,26 @@ export function Navigation() {
                         <UtensilsCrossed size={15} className="text-gray-400" />
                         My Reservations
                       </Link>
+                      {user.role === 'customer' && (
+                        <Link
+                          href="/favourites"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-gray-50 transition-colors"
+                        >
+                          <Heart size={15} className="text-gray-400" />
+                          My Favourites
+                        </Link>
+                      )}
+                      {user.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-primary hover:bg-gray-50 transition-colors"
+                        >
+                          <ShieldCheck size={15} className="text-primary" />
+                          Admin Dashboard
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -186,6 +219,16 @@ export function Navigation() {
           {user?.role === 'vendor' && (
             <Link href="/vendor/dashboard" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted">
               Dashboard
+            </Link>
+          )}
+          {user?.role === 'customer' && (
+            <Link href="/favourites" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted">
+              Favourites
+            </Link>
+          )}
+          {user?.role === 'admin' && (
+            <Link href="/admin" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm font-medium text-primary hover:bg-muted">
+              Admin Dashboard
             </Link>
           )}
           {!user && (
