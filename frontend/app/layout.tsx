@@ -8,9 +8,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'SL Eats Connect - Discover Sri Lanka\'s Finest Restaurants',
+  title: 'SL Eats Connect — Discover Sri Lanka\'s Finest Restaurants',
   description: 'AI-powered restaurant discovery platform for Sri Lanka. Find the best restaurants with intelligent search, real-time reservations, and personalized recommendations.',
-  generator: 'v0.app',
   icons: {
     icon: [
       { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
@@ -31,7 +30,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <Analytics />
-       <ChatWidgetWrapper />
+        <ChatWidgetWrapper />
       </body>
     </html>
   )

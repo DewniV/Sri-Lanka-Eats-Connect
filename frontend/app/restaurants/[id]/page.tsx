@@ -288,7 +288,7 @@ export default function RestaurantDetailPage() {
                   <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{restaurant.cuisineType}</span>
                   <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{PRICE_DISPLAY[restaurant.priceRange] || '$$'}</span>
                   {restaurant.isActive && (
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Open Now</span>
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Accepting Bookings</span>
                   )}
                   {restaurant.isVerified && (
                     <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">✓ Verified</span>
