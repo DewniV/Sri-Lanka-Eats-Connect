@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 import { X, Send, Bot, User, Loader2, Globe } from 'lucide-react';
 
 interface Message {
@@ -36,18 +36,110 @@ const SUGGESTED: Record<Lang, string[]> = {
   ta: ['கண்டியில் காதல் உணவகம்', 'கொழும்பில் கடல் உணவு', 'காலியில் மலிவு உணவு'],
 };
 
-// Simple text renderer — splits on newlines and renders paragraphs
+// Markdown renderer — handles bold, italic, bullet lists, numbered lists, line breaks
 // No external dependencies needed
-function SimpleText({ content }: { content: string }) {
+function MarkdownText({ content }: { content: string }) {
   if (!content) return null;
-  const paragraphs = content.split('\n').filter(line => line.trim() !== '');
-  return (
-    <div className="space-y-1">
-      {paragraphs.map((para, i) => (
-        <p key={i} className="text-sm leading-relaxed">{para}</p>
-      ))}
-    </div>
-  );
+
+  // Process inline markdown: **bold**, *italic*, `code`
+  function renderInline(text: string): ReactNode[] {
+    const parts: ReactNode[] = [];
+    let remaining = text;
+    let key = 0;
+
+    while (remaining.length > 0) {
+      // Bold: **text**
+      const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)/s);
+      if (boldMatch) {
+        if (boldMatch[1]) parts.push(<span key={key++}>{boldMatch[1]}</span>);
+        parts.push(<strong key={key++} className="font-semibold">{boldMatch[2]}</strong>);
+        remaining = boldMatch[3];
+        continue;
+      }
+      // Italic: *text*
+      const italicMatch = remaining.match(/^(.*?)\*(.+?)\*(.*)/s);
+      if (italicMatch) {
+        if (italicMatch[1]) parts.push(<span key={key++}>{italicMatch[1]}</span>);
+        parts.push(<em key={key++}>{italicMatch[2]}</em>);
+        remaining = italicMatch[3];
+        continue;
+      }
+      // No more markdown — push the rest as plain text
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+    return parts;
+  }
+
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+  let elemKey = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Skip empty lines (add spacing via margin on previous element)
+    if (trimmed === '') {
+      i++;
+      continue;
+    }
+
+    // Bullet list item: - text or • text
+    if (/^[-•]\s+/.test(trimmed)) {
+      const listItems: React.ReactNode[] = [];
+      while (i < lines.length && /^[-•]\s+/.test(lines[i].trim())) {
+        const itemText = lines[i].trim().replace(/^[-•]\s+/, '');
+        listItems.push(
+          <li key={i} className="flex gap-2 items-start">
+            <span className="text-primary mt-1 shrink-0">•</span>
+            <span>{renderInline(itemText)}</span>
+          </li>
+        );
+        i++;
+      }
+      elements.push(
+        <ul key={elemKey++} className="space-y-1 my-1">
+          {listItems}
+        </ul>
+      );
+      continue;
+    }
+
+    // Numbered list item: 1. text
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const listItems: React.ReactNode[] = [];
+      let num = 1;
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        const itemText = lines[i].trim().replace(/^\d+\.\s+/, '');
+        listItems.push(
+          <li key={i} className="flex gap-2 items-start">
+            <span className="text-primary font-semibold shrink-0 min-w-[1.2rem]">{num}.</span>
+            <span>{renderInline(itemText)}</span>
+          </li>
+        );
+        i++;
+        num++;
+      }
+      elements.push(
+        <ol key={elemKey++} className="space-y-1 my-1">
+          {listItems}
+        </ol>
+      );
+      continue;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p key={elemKey++} className="leading-relaxed">
+        {renderInline(trimmed)}
+      </p>
+    );
+    i++;
+  }
+
+  return <div className="space-y-2 text-sm">{elements}</div>;
 }
 
 export function ChatWidget() {
@@ -211,13 +303,13 @@ export function ChatWidget() {
                   }
                 </div>
                 {/* Bubble */}
-                <div className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                <div className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl shadow-sm ${
                   msg.role === 'user'
-                    ? 'bg-primary text-white rounded-tr-sm'
+                    ? 'bg-primary text-white rounded-tr-sm text-sm leading-relaxed'
                     : 'bg-white text-gray-800 rounded-tl-sm border border-gray-100'
                 }`}>
                   {msg.role === 'assistant' ? (
-                    <SimpleText content={msg.content} />
+                    <MarkdownText content={msg.content} />
                   ) : (
                     msg.content
                   )}
