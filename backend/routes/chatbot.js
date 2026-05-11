@@ -69,14 +69,16 @@ async function executeTool(toolName, args) {
   if (toolName === 'check_availability') {
     const restaurant = await Restaurant.findById(args.restaurantId).lean();
     if (!restaurant) return { found: false, message: 'Restaurant not found.' };
-    const available = restaurant.availableTables > 0;
+    // If availableTables is not set by vendor, default to available (assume tables are open)
+    const available = restaurant.availableTables === undefined || restaurant.availableTables === null ? true : restaurant.availableTables > 0;
     return { found: true, restaurantName: restaurant.name, totalTables: restaurant.totalTables, availableTables: restaurant.availableTables, available, availabilityNote: restaurant.availabilityNote || '', message: available ? `${restaurant.name} has ${restaurant.availableTables} table(s) available. You can proceed to confirm the booking.` : `${restaurant.name} is fully booked. ${restaurant.availabilityNote || ''}` };
   }
 
   if (toolName === 'make_reservation') {
     const restaurant = await Restaurant.findById(args.restaurantId);
     if (!restaurant) return { success: false, message: 'Restaurant not found.' };
-    if (restaurant.availableTables <= 0) return { success: false, message: `Sorry, ${args.restaurantName} is fully booked right now.` };
+    // Only block if vendor has explicitly set availableTables to 0
+    if (restaurant.availableTables !== undefined && restaurant.availableTables !== null && restaurant.availableTables <= 0) return { success: false, message: `Sorry, ${args.restaurantName} is fully booked right now.` };
     const reservation = await Reservation.create({ restaurant: args.restaurantId, customerName: args.customerName, customerEmail: args.customerEmail || '', customerPhone: args.customerPhone || '', partySize: args.partySize, reservationDate: new Date(args.reservationDate), specialRequests: args.specialRequests || '', source: 'chatbot', status: 'pending' });
     await Restaurant.findByIdAndUpdate(args.restaurantId, { $inc: { availableTables: -1 }, lastAvailabilityUpdate: new Date() });
     await notifyVendorOfReservation(reservation, restaurant);
