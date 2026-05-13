@@ -11,8 +11,11 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const createTransporter = () => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    tls: { rejectUnauthorized: false },
   });
 };
 
