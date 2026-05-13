@@ -137,11 +137,11 @@ router.post('/', protect, async (req, res) => {
     // Auto-award 100 Eats Points
     await awardPoints(req.user.id, reservation._id);
 
-    // Send confirmation emails to customer and vendor
+    // Send confirmation emails in background — don't block response
     const restaurant = await Restaurant.findById(reservation.restaurant).lean();
     const restaurantName = restaurant ? restaurant.name : 'the restaurant';
-    await sendCustomerConfirmation(reservation, restaurantName);
-    if (restaurant) await sendVendorNotification(reservation, restaurant);
+    sendCustomerConfirmation(reservation, restaurantName);
+    if (restaurant) sendVendorNotification(reservation, restaurant);
 
     res.status(201).json({ message: 'Reservation created successfully!', reservation });
   } catch (error) {

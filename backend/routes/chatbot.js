@@ -84,8 +84,8 @@ async function executeTool(toolName, args) {
     if (restaurant.availableTables !== undefined && restaurant.availableTables !== null && restaurant.availableTables <= 0) return { success: false, message: `Sorry, ${args.restaurantName} is fully booked right now.` };
     const reservation = await Reservation.create({ restaurant: args.restaurantId, customerName: args.customerName, customerEmail: args.customerEmail || '', customerPhone: args.customerPhone || '', partySize: args.partySize, reservationDate: new Date(args.reservationDate), specialRequests: args.specialRequests || '', source: 'chatbot', status: 'pending' });
     await Restaurant.findByIdAndUpdate(args.restaurantId, { $inc: { availableTables: -1 }, lastAvailabilityUpdate: new Date() });
-    await notifyVendorOfReservation(reservation, restaurant);
-    await sendCustomerConfirmationEmail(reservation, restaurant.name);
+    notifyVendorOfReservation(reservation, restaurant);
+    sendCustomerConfirmationEmail(reservation, restaurant.name);
     const dateStr = new Date(args.reservationDate).toLocaleString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     return { success: true, reservationId: reservation._id.toString(), customerName: args.customerName, restaurantName: args.restaurantName, partySize: args.partySize, dateStr, message: `Reservation confirmed! ${args.customerName} is booked at ${args.restaurantName} for ${args.partySize} people on ${dateStr}.` };
   }

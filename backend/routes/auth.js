@@ -142,11 +142,11 @@ router.post('/register', async (req, res) => {
         isVerified: false,
       });
 
-      // Send welcome email to vendor
-      await sendVendorWelcomeEmail(email, name, restaurantName);
+      // Send welcome email to vendor (fire and forget — don't block response)
+      sendVendorWelcomeEmail(email, name, restaurantName);
     } else {
-      // Send welcome email to customer
-      await sendCustomerWelcomeEmail(email, name);
+      // Send welcome email to customer (fire and forget — don't block response)
+      sendCustomerWelcomeEmail(email, name);
     }
 
     res.status(201).json({
