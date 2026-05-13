@@ -435,13 +435,12 @@ export default function RestaurantDetailPage() {
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <iframe
                         title={`Map for ${restaurant.name}`}
-                        src={`https://maps.google.com/maps?q=${mapsQuery}&output=embed&z=15`}
+                        src={`https://www.openstreetmap.org/export/embed.html?layer=mapnik&query=${mapsQuery}`}
                         width="100%"
                         height="300"
                         style={{ border: 0 }}
                         allowFullScreen
                         loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
                       />
                     </div>
                     <a

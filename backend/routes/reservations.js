@@ -3,6 +3,7 @@ const router  = express.Router();
 const nodemailer = require('nodemailer');
 const Reservation = require('../models/Reservation');
 const Restaurant  = require('../models/Restaurant');
+const User = require('../models/User');
 const { EatsPoints, PointsTransaction } = require('../models/EatsPoints');
 const { protect } = require('../middleware/auth');
 
@@ -14,6 +15,48 @@ const createTransporter = () => {
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
 };
+
+// Send notification email to vendor
+async function sendVendorNotification(reservation, restaurant) {
+  const transporter = createTransporter();
+  if (!transporter) return;
+  try {
+    const vendor = await User.findById(restaurant.owner).lean();
+    if (!vendor || !vendor.email) return;
+    const dateStr = new Date(reservation.reservationDate).toLocaleString('en-GB', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+    await transporter.sendMail({
+      from: `"SL Eats Connect" <${process.env.SMTP_USER}>`,
+      to: vendor.email,
+      subject: `New Reservation at ${restaurant.name} — ${dateStr}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #c0392b; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">New Reservation 🎉</h1>
+          </div>
+          <div style="padding: 30px; background: #fff;">
+            <h2>You have a new table booking!</h2>
+            <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+              <tr style="background:#f9f9f9;"><td style="padding:10px; font-weight:bold;">Restaurant</td><td style="padding:10px;">${restaurant.name}</td></tr>
+              <tr><td style="padding:10px; font-weight:bold;">Customer</td><td style="padding:10px;">${reservation.customerName}</td></tr>
+              <tr style="background:#f9f9f9;"><td style="padding:10px; font-weight:bold;">Date & Time</td><td style="padding:10px;">${dateStr}</td></tr>
+              <tr><td style="padding:10px; font-weight:bold;">Party Size</td><td style="padding:10px;">${reservation.partySize} people</td></tr>
+              <tr style="background:#f9f9f9;"><td style="padding:10px; font-weight:bold;">Email</td><td style="padding:10px;">${reservation.customerEmail || 'Not provided'}</td></tr>
+              <tr><td style="padding:10px; font-weight:bold;">Phone</td><td style="padding:10px;">${reservation.customerPhone || 'Not provided'}</td></tr>
+              ${reservation.specialRequests ? `<tr style="background:#f9f9f9;"><td style="padding:10px; font-weight:bold;">Special Requests</td><td style="padding:10px;">${reservation.specialRequests}</td></tr>` : ''}
+            </table>
+            <p>Please log in to your <strong>Vendor Dashboard</strong> to confirm or manage this reservation.</p>
+            <p style="color:#999; font-size:12px;">Booked via SL Eats Connect</p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error('Vendor notification email error:', err.message);
+  }
+}
 
 // Send confirmation email to customer
 async function sendCustomerConfirmation(reservation, restaurantName) {
@@ -91,10 +134,11 @@ router.post('/', protect, async (req, res) => {
     // Auto-award 100 Eats Points
     await awardPoints(req.user.id, reservation._id);
 
-    // Send customer confirmation email
+    // Send confirmation emails to customer and vendor
     const restaurant = await Restaurant.findById(reservation.restaurant).lean();
     const restaurantName = restaurant ? restaurant.name : 'the restaurant';
     await sendCustomerConfirmation(reservation, restaurantName);
+    if (restaurant) await sendVendorNotification(reservation, restaurant);
 
     res.status(201).json({ message: 'Reservation created successfully!', reservation });
   } catch (error) {

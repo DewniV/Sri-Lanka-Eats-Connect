@@ -27,6 +27,43 @@ const createTransporter = () => {
   });
 };
 
+// Send welcome email to new customer
+async function sendCustomerWelcomeEmail(customerEmail, customerName) {
+  const transporter = createTransporter();
+  if (!transporter) return;
+
+  try {
+    await transporter.sendMail({
+      from: `"SL Eats Connect" <${process.env.SMTP_USER}>`,
+      to: customerEmail,
+      subject: `Welcome to SL Eats Connect, ${customerName}! 🍛`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #c0392b; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">Welcome to SL Eats Connect 🍛</h1>
+          </div>
+          <div style="padding: 30px; background: #fff;">
+            <h2>Hi ${customerName}! 👋</h2>
+            <p>Your account has been created successfully. Welcome to Sri Lanka's restaurant discovery platform!</p>
+            <p>Here's what you can do:</p>
+            <ul>
+              <li>🔍 <strong>Browse</strong> 50+ restaurants across Sri Lanka</li>
+              <li>🤖 <strong>Chat with Nila</strong> — our AI food guide who can find restaurants and book tables for you</li>
+              <li>📅 <strong>Make reservations</strong> at your favourite restaurants</li>
+              <li>⭐ <strong>Earn Eats Points</strong> on every booking — redeemable for discounts</li>
+              <li>❤️ <strong>Save favourites</strong> so you never lose track of a great spot</li>
+            </ul>
+            <p style="color: #666; font-size: 14px;">Start exploring at <a href="https://sri-lanka-eats-connect.vercel.app">sri-lanka-eats-connect.vercel.app</a></p>
+            <p>Enjoy your dining experiences!<br><strong>The SL Eats Connect Team</strong></p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error('Failed to send customer welcome email:', err.message);
+  }
+}
+
 // Send welcome email to new vendor
 async function sendVendorWelcomeEmail(vendorEmail, vendorName, restaurantName) {
   const transporter = createTransporter();
@@ -102,6 +139,9 @@ router.post('/register', async (req, res) => {
 
       // Send welcome email to vendor
       await sendVendorWelcomeEmail(email, name, restaurantName);
+    } else {
+      // Send welcome email to customer
+      await sendCustomerWelcomeEmail(email, name);
     }
 
     res.status(201).json({
