@@ -134,7 +134,7 @@ export default function RegisterPage() {
       if (role === 'vendor') {
         router.push('/vendor/dashboard');
       } else {
-        router.push('/');
+        router.push('/profile');
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed');
