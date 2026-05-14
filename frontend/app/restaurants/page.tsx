@@ -76,7 +76,7 @@ export default function RestaurantsPage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#f7f3ed' }}>
+    <main className="min-h-screen" style={{ background: '#0a1a10' }}>
       <Navigation />
 
       {/* Hero Banner */}
@@ -102,12 +102,12 @@ export default function RestaurantsPage() {
         </div>
 
         {/* Search bar sits just below hero */}
-        <div style={{ background: '#f7f3ed' }}>
+        <div style={{ background: '#0a1a10' }}>
           <SearchFilterBar onSearch={handleSearch} />
         </div>
 
         {/* Restaurant Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" style={{ background: '#0a1a10' }}>
 
           {loading && (
             <div className="flex flex-col justify-center items-center py-24 gap-4">
@@ -133,8 +133,8 @@ export default function RestaurantsPage() {
           {!loading && !error && (
             <>
               <div className="flex items-center justify-between mb-6">
-                <p className="text-sm font-medium" style={{ color: '#6b5a3e' }}>
-                  <span className="font-bold text-base" style={{ color: '#1a3a2a' }}>{filteredRestaurants.length}</span> restaurant{filteredRestaurants.length !== 1 ? 's' : ''} found
+                <p className="text-sm font-medium" style={{ color: '#a89060' }}>
+                  <span className="font-bold text-base" style={{ color: '#d4af37' }}>{filteredRestaurants.length}</span> restaurant{filteredRestaurants.length !== 1 ? 's' : ''} found
                   {totalPages > 1 && <span style={{ color: '#a89060' }}> — Page {currentPage} of {totalPages}</span>}
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function RestaurantsPage() {
                           className="w-9 h-9 rounded-xl text-sm font-semibold transition-all"
                           style={page === currentPage
                             ? { background: 'linear-gradient(135deg, #d4af37, #f0d060)', color: '#1a3a2a', boxShadow: '0 2px 8px rgba(212,175,55,0.4)' }
-                            : { background: 'white', color: '#1a3a2a', border: '1px solid #e5d9c5' }}>
+                            : { background: 'rgba(255,255,255,0.07)', color: '#f5f0e8', border: '1px solid rgba(212,175,55,0.2)' }}>
                           {page}
                         </button>
                       ))}
@@ -193,8 +193,8 @@ export default function RestaurantsPage() {
                   <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(212,175,55,0.1)' }}>
                     <Search size={32} style={{ color: '#d4af37' }} />
                   </div>
-                  <p className="text-lg font-semibold mb-2" style={{ color: '#1a3a2a' }}>No restaurants found</p>
-                  <p className="text-sm" style={{ color: '#6b5a3e' }}>Try adjusting your search or filters.</p>
+                  <p className="text-lg font-semibold mb-2" style={{ color: '#f5f0e8' }}>No restaurants found</p>
+                  <p className="text-sm" style={{ color: '#a89060' }}>Try adjusting your search or filters.</p>
                 </div>
               )}
             </>
