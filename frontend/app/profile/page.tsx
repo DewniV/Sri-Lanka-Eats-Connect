@@ -35,15 +35,15 @@ interface PointsTransaction {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  confirmed: 'bg-green-100 text-green-700',
-  pending: 'bg-amber-100 text-amber-700',
-  cancelled: 'bg-red-100 text-red-600',
+  confirmed: 'text-green-400 font-semibold',
+  pending: 'text-amber-400 font-semibold',
+  cancelled: 'text-red-400 font-semibold',
 };
 
 function getTier(balance: number) {
-  if (balance >= 1000) return { name: 'VIP', color: 'text-purple-600', bg: 'bg-purple-100', next: null, progress: 100 };
-  if (balance >= 500)  return { name: 'Regular', color: 'text-primary', bg: 'bg-primary/10', next: 1000, progress: Math.round(((balance - 500) / 500) * 100) };
-  return { name: 'Foodie', color: 'text-amber-600', bg: 'bg-amber-100', next: 500, progress: Math.round((balance / 500) * 100) };
+  if (balance >= 1000) return { name: 'VIP', color: 'text-purple-600', bg: 'bg-purple-900/30', next: null, progress: 100 };
+  if (balance >= 500)  return { name: 'Regular', color: 'text-primary', bg: 'bg-primary/20', next: 1000, progress: Math.round(((balance - 500) / 500) * 100) };
+  return { name: 'Foodie', color: 'text-amber-600', bg: 'bg-amber-900/30', next: 500, progress: Math.round((balance / 500) * 100) };
 }
 
 export default function ProfilePage() {
@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a1a10' }}>
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -142,39 +142,39 @@ export default function ProfilePage() {
   ];
 
   return (
-    <main className="min-h-screen" style={{ background: '#f7f3ed' }}>
+    <main className="min-h-screen" style={{ background: '#0a1a10' }}>
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+        <div className="rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
           <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-foreground">{user.name}</h1>
-            <p className="text-muted-foreground text-sm">{user.email}</p>
+            <h1 className="text-2xl font-bold" style={{ color: "#f5f0e8" }}>{user.name}</h1>
+            <p className="text-sm" style={{ color: "#a89060" }}>{user.email}</p>
             <span className={`inline-block mt-2 px-3 py-0.5 rounded-full text-xs font-semibold capitalize ${
-              user.role === 'vendor' ? 'bg-blue-100 text-blue-700' :
-              user.role === 'admin'  ? 'bg-purple-100 text-purple-700' :
-              'bg-primary/10 text-primary'
+              user.role === 'vendor' ? 'bg-blue-900/40 text-blue-300' :
+              user.role === 'admin'  ? 'bg-purple-900/40 text-purple-300' :
+              'bg-primary/20 text-amber-300'
             }`}>
               {user.role}
             </span>
           </div>
-          <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors">
+          <button onClick={handleLogout} className="flex items-center gap-2 text-sm transition-colors hover:opacity-70" style={{ color: "#a89060" }}>
             <LogOut size={16} /> Sign out
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-white border border-border rounded-xl p-1 mb-6 w-fit">
+        <div className="flex gap-1 rounded-xl p-1 mb-6 w-fit" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                activeTab === tab.id ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                activeTab === tab.id ? 'text-white shadow-sm' : 'hover:opacity-80'
               }`}
             >
               {tab.label}
@@ -184,21 +184,21 @@ export default function ProfilePage() {
 
         {/* Tab: Personal Info */}
         {activeTab === 'info' && (
-          <div className="bg-white rounded-2xl border border-border shadow-sm divide-y divide-border">
+          <div className="rounded-2xl divide-y" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)", borderColor: "rgba(212,175,55,0.2)" }}>
             {[
               { icon: User,   label: 'Full Name',     value: user.name },
               { icon: Mail,   label: 'Email Address', value: user.email },
               { icon: Shield, label: 'Account Role',  value: user.role.charAt(0).toUpperCase() + user.role.slice(1) },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-center gap-4 px-6 py-5">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(212,175,55,0.15)" }}>
                   <Icon size={18} className="text-primary" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">{label}</div>
-                  <div className="font-semibold text-foreground">{value}</div>
+                  <div className="text-xs mb-0.5" style={{ color: "#a89060" }}>{label}</div>
+                  <div className="font-semibold" style={{ color: "#f5f0e8" }}>{value}</div>
                 </div>
-                <ChevronRight size={16} className="text-muted-foreground" />
+                <ChevronRight size={16} className="" style={{ color: "#a89060" }} />
               </div>
             ))}
 
@@ -281,7 +281,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 {/* Balance card */}
-                <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
+                <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-1">Your Balance</p>
@@ -309,31 +309,31 @@ export default function ProfilePage() {
 
                   <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
                     {[
-                      { tier: 'Foodie', range: '0 – 499 pts', color: 'text-amber-600', bg: 'bg-amber-50' },
-                      { tier: 'Regular', range: '500 – 999 pts', color: 'text-primary', bg: 'bg-primary/5' },
-                      { tier: 'VIP', range: '1,000+ pts', color: 'text-purple-600', bg: 'bg-purple-50' },
+                      { tier: 'Foodie', range: '0 – 499 pts', color: 'text-amber-600', bg: 'bg-amber-900/30' },
+                      { tier: 'Regular', range: '500 – 999 pts', color: 'text-primary', bg: 'bg-primary/20' },
+                      { tier: 'VIP', range: '1,000+ pts', color: 'text-purple-600', bg: 'bg-purple-900/30' },
                     ].map(t => (
                       <div key={t.tier} className={`rounded-xl p-2 ${t.bg}`}>
                         <div className={`font-bold ${t.color}`}>{t.tier}</div>
-                        <div className="text-muted-foreground">{t.range}</div>
+                        <div className="" style={{ color: "#a89060" }}>{t.range}</div>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3">Points expire 12 months after they are earned.</p>
+                  <p className="text-xs mt-3" style={{ color: "#a89060" }}>Points expire 12 months after they are earned.</p>
                 </div>
 
                 {/* Redeem card */}
-                <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
+                <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(212,175,55,0.15)" }}>
                       <Gift size={22} className="text-primary" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-foreground mb-1">Redeem for Dining Discount</h3>
-                      <p className="text-sm text-muted-foreground mb-4">Use 500 points to get a discount code for your next visit at any partner restaurant.</p>
+                      <h3 className="font-bold mb-1" style={{ color: "#f5f0e8" }}>Redeem for Dining Discount</h3>
+                      <p className="text-sm mb-4" style={{ color: "#a89060" }}>Use 500 points to get a discount code for your next visit at any partner restaurant.</p>
 
                       {discountCode ? (
-                        <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-center">
+                        <div className="rounded-xl px-5 py-4 text-center" style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)" }}>
                           <p className="text-xs text-green-600 font-semibold uppercase tracking-widest mb-1">Your Discount Code</p>
                           <p className="text-2xl font-black text-green-700 tracking-widest">{discountCode}</p>
                           <p className="text-xs text-green-600 mt-1">Show this to the restaurant when you arrive</p>
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                             Redeem 500 Points
                           </button>
                           {pointsBalance < 500 && (
-                            <p className="text-xs text-muted-foreground mt-2">You need {500 - pointsBalance} more points to redeem.</p>
+                            <p className="text-xs mt-2" style={{ color: "#a89060" }}>You need {500 - pointsBalance} more points to redeem.</p>
                           )}
                         </>
                       )}
@@ -359,23 +359,23 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Transaction history */}
-                <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
-                  <h3 className="font-bold text-foreground mb-4">Points History</h3>
+                <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
+                  <h3 className="font-bold mb-4" style={{ color: "#f5f0e8" }}>Points History</h3>
                   {transactions.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-6">No transactions yet. Make a reservation to earn your first points!</p>
+                    <p className="text-sm text-center py-6" style={{ color: "#a89060" }}>No transactions yet. Make a reservation to earn your first points!</p>
                   ) : (
                     <div className="space-y-3">
                       {transactions.map((t) => (
                         <div key={t._id} className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${t.type === 'earn' ? 'bg-green-50' : 'bg-red-50'}`}>
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${t.type === 'earn' ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
                             {t.type === 'earn'
                               ? <ArrowDownCircle size={18} className="text-green-600" />
                               : <ArrowUpCircle size={18} className="text-red-500" />
                             }
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-semibold text-foreground">{t.description}</p>
-                            <p className="text-xs text-muted-foreground">{new Date(t.createdAt).toLocaleDateString('en-LK', { dateStyle: 'medium' })}</p>
+                            <p className="text-sm font-semibold" style={{ color: "#f5f0e8" }}>{t.description}</p>
+                            <p className="text-xs" style={{ color: "#a89060" }}>{new Date(t.createdAt).toLocaleDateString('en-LK', { dateStyle: 'medium' })}</p>
                           </div>
                           <span className={`text-sm font-bold ${t.type === 'earn' ? 'text-green-600' : 'text-red-500'}`}>
                             {t.type === 'earn' ? '+' : '-'}{t.points} pts
