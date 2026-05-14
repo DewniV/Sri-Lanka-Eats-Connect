@@ -89,7 +89,13 @@ async function executeTool(toolName, args) {
     if (!restaurant) return { success: false, message: 'Restaurant not found.' };
     // Only block if vendor has explicitly set availableTables to 0
     if (restaurant.availableTables !== undefined && restaurant.availableTables !== null && restaurant.availableTables <= 0) return { success: false, message: `Sorry, ${args.restaurantName} is fully booked right now.` };
-    const reservation = await Reservation.create({ restaurant: args.restaurantId, customerName: args.customerName, customerEmail: args.customerEmail || '', customerPhone: args.customerPhone || '', partySize: args.partySize, reservationDate: new Date(args.reservationDate), specialRequests: args.specialRequests || '', source: 'chatbot', status: 'pending' });
+    // Try to link reservation to a registered user account by email
+    let customerId = null;
+    if (args.customerEmail) {
+      const userAccount = await User.findOne({ email: args.customerEmail.toLowerCase() }).lean();
+      if (userAccount) customerId = userAccount._id;
+    }
+    const reservation = await Reservation.create({ restaurant: args.restaurantId, customerName: args.customerName, customerEmail: args.customerEmail || '', customerPhone: args.customerPhone || '', partySize: args.partySize, reservationDate: new Date(args.reservationDate), specialRequests: args.specialRequests || '', source: 'chatbot', status: 'pending', ...(customerId && { customer: customerId }) });
     await Restaurant.findByIdAndUpdate(args.restaurantId, { $inc: { availableTables: -1 }, lastAvailabilityUpdate: new Date() });
     notifyVendorOfReservation(reservation, restaurant);
     sendCustomerConfirmationEmail(reservation, restaurant.name);
