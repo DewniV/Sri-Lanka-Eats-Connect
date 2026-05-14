@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
 const User = require('../models/User');
-const { EatsPoints, PointsTransaction } = require('../models/EatsPoints');
+const EatsPoints = require('../models/EatsPoints');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -54,16 +54,10 @@ async function sendCustomerConfirmationEmail(reservation, restaurantName) {
 async function awardPoints(customerId, reservationId) {
   try {
     const POINTS_PER_RESERVATION = 100;
-    await EatsPoints.findOneAndUpdate(
-      { customer: customerId },
-      { $inc: { balance: POINTS_PER_RESERVATION } },
-      { upsert: true, new: true }
-    );
-    await PointsTransaction.create({
-      customer:    customerId,
-      type:        'earn',
+    await EatsPoints.create({
+      user:        customerId,
       points:      POINTS_PER_RESERVATION,
-      description: 'Reservation reward',
+      reason:      'reservation',
       reservation: reservationId,
     });
   } catch (err) {

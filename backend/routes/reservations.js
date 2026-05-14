@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const Reservation = require('../models/Reservation');
 const Restaurant  = require('../models/Restaurant');
 const User = require('../models/User');
-const { EatsPoints, PointsTransaction } = require('../models/EatsPoints');
+const EatsPoints = require('../models/EatsPoints');
 const { protect } = require('../middleware/auth');
 
 // Email transporter (only created if SMTP env vars are set)
