@@ -4,6 +4,7 @@ import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { SearchFilterBar } from '@/components/search-filter-bar';
 import { RestaurantCard } from '@/components/restaurant-card';
+import { Search } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,6 @@ export default function RestaurantsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 12;
 
-  // Fetch all restaurants from backend on page load
   useEffect(() => {
     fetchRestaurants();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,23 +40,15 @@ export default function RestaurantsPage() {
     try {
       setLoading(true);
       setError('');
-
       const params = new URLSearchParams();
       if (filters?.query) params.append('search', filters.query);
       if (filters?.cuisine && filters.cuisine !== 'All') params.append('cuisine', filters.cuisine);
       if (filters?.city && filters.city !== 'All') params.append('city', filters.city);
-
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/restaurants${params.toString() ? '?' + params.toString() : ''}`;
       const response = await fetch(url);
-
       if (!response.ok) throw new Error('Failed to fetch restaurants');
-
       const data = await response.json();
-
-      // Backend returns either a plain array OR { restaurants: [...], total: N }
-      // Handle both formats safely
       const list: Restaurant[] = Array.isArray(data) ? data : (data.restaurants || []);
-
       setRestaurants(list);
       setFilteredRestaurants(list);
     } catch (err) {
@@ -73,61 +65,79 @@ export default function RestaurantsPage() {
     fetchRestaurants(filters);
   };
 
-  // Suppress unused variable warning for activeFilters
   void activeFilters;
 
-  // Pagination helpers
   const totalPages = Math.ceil(filteredRestaurants.length / PAGE_SIZE);
   const paginatedRestaurants = filteredRestaurants.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  // Map priceRange from DB values to display symbols
   const getPriceDisplay = (priceRange: string) => {
-    const map: Record<string, string> = {
-      budget: '$',
-      mid: '$$',
-      upscale: '$$$',
-      fine: '$$$$'
-    };
+    const map: Record<string, string> = { budget: '$', mid: '$$', upscale: '$$$', fine: '$$$$' };
     return map[priceRange] || '$$';
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen" style={{ background: '#f7f3ed' }}>
       <Navigation />
+
+      {/* Hero Banner */}
       <div className="pt-16">
-        <SearchFilterBar onSearch={handleSearch} />
+        <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a3a2a 0%, #0f2419 60%, #2d1810 100%)', minHeight: '220px' }}>
+          {/* Decorative circles */}
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #d4af37, transparent)', transform: 'translate(30%, -30%)' }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #d4af37, transparent)', transform: 'translate(-30%, 30%)' }} />
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, #d4af37)' }} />
+              <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#d4af37' }}>Discover Sri Lanka</span>
+              <div className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, #d4af37)' }} />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#f5f0e8' }}>
+              Find Your Perfect Dining Experience
+            </h1>
+            <p className="text-base max-w-xl mx-auto" style={{ color: '#a89060' }}>
+              From beachfront seafood in Galle to rooftop dining in Colombo — discover Sri Lanka&apos;s finest restaurants
+            </p>
+          </div>
+        </div>
+
+        {/* Search bar sits just below hero */}
+        <div style={{ background: '#f7f3ed' }}>
+          <SearchFilterBar onSearch={handleSearch} />
+        </div>
 
         {/* Restaurant Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-          {/* Loading state */}
           {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              <span className="ml-4 text-muted-foreground">Loading restaurants...</span>
+            <div className="flex flex-col justify-center items-center py-24 gap-4">
+              <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: '#d4af37', borderTopColor: 'transparent' }} />
+              <span className="text-sm font-medium" style={{ color: '#6b5a3e' }}>Loading restaurants...</span>
             </div>
           )}
 
-          {/* Error state */}
           {!loading && error && (
-            <div className="text-center py-12">
-              <p className="text-lg text-red-500">{error}</p>
-              <button
-                onClick={() => fetchRestaurants()}
-                className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:opacity-90"
-              >
+            <div className="text-center py-16">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#fee2e2' }}>
+                <Search size={24} style={{ color: '#ef4444' }} />
+              </div>
+              <p className="text-lg font-medium text-red-600 mb-4">{error}</p>
+              <button onClick={() => fetchRestaurants()}
+                className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105 shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #d4af37, #f0d060)', color: '#1a3a2a' }}>
                 Try Again
               </button>
             </div>
           )}
 
-          {/* Results */}
           {!loading && !error && (
             <>
-              <p className="text-muted-foreground mb-6">
-                Showing {filteredRestaurants.length} restaurant{filteredRestaurants.length !== 1 ? 's' : ''}
-                {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
-              </p>
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-sm font-medium" style={{ color: '#6b5a3e' }}>
+                  <span className="font-bold text-base" style={{ color: '#1a3a2a' }}>{filteredRestaurants.length}</span> restaurant{filteredRestaurants.length !== 1 ? 's' : ''} found
+                  {totalPages > 1 && <span style={{ color: '#a89060' }}> — Page {currentPage} of {totalPages}</span>}
+                </p>
+              </div>
 
               {paginatedRestaurants.length > 0 ? (
                 <>
@@ -148,43 +158,43 @@ export default function RestaurantsPage() {
                     ))}
                   </div>
 
-                  {/* Pagination controls */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-2 mt-10">
+                    <div className="flex items-center justify-center gap-2 mt-12">
                       <button
                         onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         disabled={currentPage === 1}
-                        className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                      >
+                        className="px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ background: '#1a3a2a', color: '#d4af37', border: '1px solid rgba(212,175,55,0.3)' }}>
                         ← Previous
                       </button>
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                         <button
                           key={page}
                           onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                          className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
-                            page === currentPage
-                              ? 'bg-primary text-primary-foreground shadow'
-                              : 'border border-border hover:bg-gray-50'
-                          }`}
-                        >
+                          className="w-9 h-9 rounded-xl text-sm font-semibold transition-all"
+                          style={page === currentPage
+                            ? { background: 'linear-gradient(135deg, #d4af37, #f0d060)', color: '#1a3a2a', boxShadow: '0 2px 8px rgba(212,175,55,0.4)' }
+                            : { background: 'white', color: '#1a3a2a', border: '1px solid #e5d9c5' }}>
                           {page}
                         </button>
                       ))}
                       <button
                         onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         disabled={currentPage === totalPages}
-                        className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                      >
+                        className="px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ background: '#1a3a2a', color: '#d4af37', border: '1px solid rgba(212,175,55,0.3)' }}>
                         Next →
                       </button>
                     </div>
                   )}
                 </>
               ) : (
-                <div className="text-center py-12">
-                  <p className="text-lg text-muted-foreground">No restaurants found matching your criteria.</p>
-                  <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters.</p>
+                <div className="text-center py-20">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(212,175,55,0.1)' }}>
+                    <Search size={32} style={{ color: '#d4af37' }} />
+                  </div>
+                  <p className="text-lg font-semibold mb-2" style={{ color: '#1a3a2a' }}>No restaurants found</p>
+                  <p className="text-sm" style={{ color: '#6b5a3e' }}>Try adjusting your search or filters.</p>
                 </div>
               )}
             </>

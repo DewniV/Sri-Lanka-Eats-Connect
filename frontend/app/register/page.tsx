@@ -144,47 +144,42 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4" style={{ background: '#f7f3ed' }}>
       <div className="w-full max-w-xl">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold" style={{ color: 'oklch(0.585 0.22 29.234)' }}>
-              SL Eats Connect
-            </h1>
+          <Link href="/" className="inline-flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-base shadow-lg" style={{ background: 'linear-gradient(135deg, #1a3a2a, #2d5a3d)', color: '#d4af37' }}>SL</div>
+            <h1 className="text-2xl font-bold" style={{ color: '#1a3a2a' }}>SL Eats Connect</h1>
           </Link>
-          <p className="text-gray-500 mt-1">Create your account</p>
+          <p className="mt-1 text-sm" style={{ color: '#6b5a3e' }}>Join Sri Lanka&apos;s premier dining platform</p>
         </div>
 
         {/* Role Tabs */}
-        <div className="flex rounded-xl overflow-hidden border border-gray-200 mb-6 bg-white shadow-sm">
+        <div className="flex rounded-xl overflow-hidden mb-6 shadow-sm" style={{ border: '1.5px solid #e5d9c5', background: 'white' }}>
           <button
             type="button"
             onClick={() => setRole('customer')}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${
-              role === 'customer'
-                ? 'text-white'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-            style={role === 'customer' ? { backgroundColor: 'oklch(0.585 0.22 29.234)' } : {}}
+            className="flex-1 py-3 text-sm font-semibold transition-all"
+            style={role === 'customer'
+              ? { background: 'linear-gradient(135deg, #1a3a2a, #2d5a3d)', color: '#d4af37' }
+              : { color: '#6b5a3e', background: 'white' }}
           >
-            🍽️ I'm a Food Lover
+            🍽️ I&apos;m a Food Lover
           </button>
           <button
             type="button"
             onClick={() => setRole('vendor')}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${
-              role === 'vendor'
-                ? 'text-white'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-            style={role === 'vendor' ? { backgroundColor: 'oklch(0.585 0.22 29.234)' } : {}}
+            className="flex-1 py-3 text-sm font-semibold transition-all"
+            style={role === 'vendor'
+              ? { background: 'linear-gradient(135deg, #1a3a2a, #2d5a3d)', color: '#d4af37' }
+              : { color: '#6b5a3e', background: 'white' }}
           >
-            🏪 I'm a Restaurant Owner
+            🏪 I&apos;m a Restaurant Owner
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-8 space-y-5">
+        <form onSubmit={handleSubmit} className="rounded-2xl shadow-lg p-8 space-y-5" style={{ background: 'white', border: '1px solid #e5d9c5' }}>
           {/* Account Details */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -436,8 +431,8 @@ export default function RegisterPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-              {error}
+            <div className="rounded-xl px-4 py-3 text-sm flex items-start gap-2" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626' }}>
+              <span>⚠</span><span>{error}</span>
             </div>
           )}
 
@@ -445,19 +440,22 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-opacity disabled:opacity-60"
-            style={{ backgroundColor: 'oklch(0.585 0.22 29.234)' }}
+            className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+            style={{ background: 'linear-gradient(135deg, #1a3a2a, #2d5a3d)', color: '#f5f0e8', boxShadow: '0 4px 15px rgba(26,58,42,0.3)' }}
           >
-            {loading
-              ? 'Creating account...'
-              : role === 'vendor'
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-4 h-4 rounded-full border-2 animate-spin" style={{ borderColor: '#d4af37', borderTopColor: 'transparent' }} />
+                Creating account...
+              </span>
+            ) : role === 'vendor'
               ? 'Create Account & List My Restaurant'
               : 'Create Account'}
           </button>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm" style={{ color: '#6b5a3e' }}>
             Already have an account?{' '}
-            <Link href="/login" className="font-medium hover:underline" style={{ color: 'oklch(0.585 0.22 29.234)' }}>
+            <Link href="/login" className="font-semibold hover:underline" style={{ color: '#1a3a2a' }}>
               Sign in
             </Link>
           </p>

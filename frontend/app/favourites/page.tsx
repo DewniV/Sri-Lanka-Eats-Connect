@@ -81,7 +81,7 @@ export default function FavouritesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen" style={{ background: '#f7f3ed' }}>
       <Navigation />
       <div className="pt-20 pb-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 

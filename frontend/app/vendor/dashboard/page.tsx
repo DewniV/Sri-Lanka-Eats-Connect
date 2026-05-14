@@ -285,9 +285,9 @@ export default function VendorDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#f7f3ed' }}>
       {/* Header */}
-      <header className="text-white shadow-sm" style={{ backgroundColor: 'oklch(0.585 0.22 29.234)' }}>
+      <header className="text-white shadow-lg" style={{ background: 'linear-gradient(135deg, #1a3a2a 0%, #0f2419 100%)', borderBottom: '1px solid rgba(212,175,55,0.25)' }}>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Vendor Dashboard</h1>

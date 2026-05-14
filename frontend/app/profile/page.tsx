@@ -142,7 +142,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <main className="min-h-screen bg-muted/30">
+    <main className="min-h-screen" style={{ background: '#f7f3ed' }}>
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
