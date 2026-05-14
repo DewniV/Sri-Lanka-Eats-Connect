@@ -11,6 +11,28 @@ interface SearchFilterProps {
   }) => void;
 }
 
+const inputStyle = {
+  background: 'rgba(255,255,255,0.08)',
+  border: '1px solid rgba(212,175,55,0.3)',
+  color: '#f5f0e8',
+  borderRadius: '0.75rem',
+  padding: '0.75rem 1rem',
+  outline: 'none',
+  width: '100%',
+  fontSize: '0.95rem',
+};
+
+const selectStyle = {
+  background: '#0f2419',
+  border: '1px solid rgba(212,175,55,0.3)',
+  color: '#f5f0e8',
+  borderRadius: '0.75rem',
+  padding: '0.75rem 1rem',
+  outline: 'none',
+  cursor: 'pointer',
+  fontSize: '0.95rem',
+};
+
 export function SearchFilterBar({ onSearch }: SearchFilterProps) {
   const [query, setQuery] = useState('');
   const [cuisine, setCuisine] = useState('All');
@@ -27,29 +49,36 @@ export function SearchFilterBar({ onSearch }: SearchFilterProps) {
   };
 
   return (
-    <div className="bg-white border-b border-border">
+    <div style={{ background: 'linear-gradient(180deg, #0a1a10 0%, #0f2419 100%)', borderBottom: '1px solid rgba(212,175,55,0.15)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 className="text-3xl font-bold text-foreground mb-6">Find Restaurants</h2>
+        <h2 className="text-3xl font-bold mb-6" style={{ color: '#f5f0e8', fontFamily: "'Playfair Display', serif" }}>
+          Find Restaurants
+        </h2>
 
         <div className="flex flex-col md:flex-row gap-4">
           {/* Text Search Input */}
-          <input
-            type="text"
-            placeholder="Search restaurants..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-1 px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#d4af37' }} />
+            <input
+              type="text"
+              placeholder="Search restaurants..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              style={{ ...inputStyle, paddingLeft: '2.5rem' }}
+              onFocus={e => (e.target.style.borderColor = 'rgba(212,175,55,0.8)')}
+              onBlur={e => (e.target.style.borderColor = 'rgba(212,175,55,0.3)')}
+            />
+          </div>
 
           {/* Cuisine Dropdown */}
           <select
             value={cuisine}
             onChange={(e) => setCuisine(e.target.value)}
-            className="px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-foreground"
+            style={selectStyle}
           >
             <option value="All">All Cuisines</option>
-            <option value="Rice & Curry">Rice & Curry</option>
+            <option value="Rice & Curry">Rice &amp; Curry</option>
             <option value="Seafood">Seafood</option>
             <option value="Chinese">Chinese</option>
             <option value="Indian">Indian</option>
@@ -63,7 +92,7 @@ export function SearchFilterBar({ onSearch }: SearchFilterProps) {
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-foreground"
+            style={selectStyle}
           >
             <option value="All">All Cities</option>
             <option value="Colombo">Colombo</option>
@@ -76,9 +105,9 @@ export function SearchFilterBar({ onSearch }: SearchFilterProps) {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 whitespace-nowrap"
+            className="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 whitespace-nowrap text-sm"
           >
-            <Search size={20} />
+            <Search size={18} />
             Search
           </button>
         </div>
