@@ -223,7 +223,7 @@ export default function ProfilePage() {
                 <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : reservations.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-border shadow-sm p-12 text-center">
+              <div className="rounded-2xl p-12 text-center" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
                 <Calendar size={40} className="mx-auto mb-4" style={{ color: "#a89060" }} />
                 <h3 className="font-semibold mb-2" style={{ color: "#f5f0e8" }}>No reservations yet</h3>
                 <p className="text-sm mb-6" style={{ color: "#a89060" }}>When you book a table, your reservations will appear here.</p>
@@ -237,7 +237,7 @@ export default function ProfilePage() {
                   const restaurantName = typeof r.restaurantId === 'object' ? r.restaurantId.name : 'Restaurant';
                   const restaurantCity = typeof r.restaurantId === 'object' ? r.restaurantId.city : '';
                   return (
-                    <div key={r._id} className="bg-white rounded-2xl border border-border shadow-sm p-5">
+                    <div key={r._id} className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(212,175,55,0.2)" }}>
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div>
                           <h3 className="font-bold text-lg" style={{ color: "#f5f0e8" }}>{restaurantName}</h3>
