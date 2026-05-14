@@ -88,12 +88,10 @@ export default function ProfilePage() {
     setLoadingPoints(true);
     try {
       const token = localStorage.getItem('sl_eats_token');
-      const [balRes, histRes] = await Promise.all([
+      const [balRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/points/balance`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/points/history`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
-      if (balRes.ok)  { const d = await balRes.json();  setPointsBalance(d.balance); }
-      if (histRes.ok) { const d = await histRes.json(); setTransactions(d); }
+      if (balRes.ok)  { const d = await balRes.json();  setPointsBalance(d.balance); setTransactions(d.transactions || []); }
     } catch { /* silently fail */ } finally { setLoadingPoints(false); }
   };
 
@@ -367,18 +365,18 @@ export default function ProfilePage() {
                     <div className="space-y-3">
                       {transactions.map((t) => (
                         <div key={t._id} className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${t.type === 'earn' ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
-                            {t.type === 'earn'
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${t.points > 0 ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
+                            {t.points > 0
                               ? <ArrowDownCircle size={18} className="text-green-600" />
                               : <ArrowUpCircle size={18} className="text-red-500" />
                             }
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-semibold" style={{ color: "#f5f0e8" }}>{t.description}</p>
-                            <p className="text-xs" style={{ color: "#a89060" }}>{new Date(t.createdAt).toLocaleDateString('en-LK', { dateStyle: 'medium' })}</p>
+                            <p className="text-sm font-semibold" style={{ color: "#f5f0e8" }}>{t.reason || "Reservation reward"}</p>
+                            <p className="text-xs" style={{ color: "#a89060" }}>{new Date(t.earnedAt || t.createdAt).toLocaleDateString('en-LK', { dateStyle: 'medium' })}</p>
                           </div>
-                          <span className={`text-sm font-bold ${t.type === 'earn' ? 'text-green-600' : 'text-red-500'}`}>
-                            {t.type === 'earn' ? '+' : '-'}{t.points} pts
+                          <span className={`text-sm font-bold ${t.points > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {t.points > 0 ? '+' : ''}{t.points} pts
                           </span>
                         </div>
                       ))}
