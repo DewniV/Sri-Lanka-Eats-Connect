@@ -31,15 +31,24 @@ const TIERS = [
 
 export function EatsPoints() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0a1a10 0%, #0f2419 50%, #1a2e0a 100%)' }}>
+      {/* Gold glow top */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-64 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.1) 0%, transparent 70%)', filter: 'blur(20px)' }} />
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Loyalty Programme</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, #d4af37)' }} />
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#d4af37' }}>Loyalty Programme</span>
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, #d4af37)' }} />
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", color: '#f5f0e8' }}>
             Earn Eats Points Every Visit
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: '#a89060' }}>
             Book a table, earn 100 points. Collect 500 points and unlock real dining rewards at your favourite Sri Lankan restaurants.
           </p>
         </div>
@@ -47,10 +56,11 @@ export function EatsPoints() {
         {/* How it works — 3 steps */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-14">
           {STEPS.map((item) => (
-            <div key={item.step} className="bg-white rounded-2xl p-6 border border-border shadow-sm text-center">
-              <div className="text-4xl font-bold text-primary/10 mb-3">{item.step}</div>
-              <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+            <div key={item.step}
+              className="glass-card rounded-2xl p-6 text-center hover:scale-[1.02] transition-all duration-300">
+              <div className="text-5xl font-bold mb-3 gold-text">{item.step}</div>
+              <h3 className="font-bold mb-2" style={{ color: '#f5f0e8' }}>{item.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: '#a89060' }}>{item.desc}</p>
             </div>
           ))}
         </div>
@@ -60,19 +70,28 @@ export function EatsPoints() {
           {TIERS.map((tier) => (
             <div
               key={tier.name}
-              className={`rounded-2xl p-6 border text-center transition-shadow ${
-                tier.highlight
-                  ? 'bg-primary text-white border-primary shadow-lg scale-105'
-                  : 'bg-white border-border text-foreground'
-              }`}
+              className="rounded-2xl p-6 text-center transition-all duration-300 hover:scale-[1.02]"
+              style={tier.highlight ? {
+                background: 'linear-gradient(135deg, #d4af37, #f0d060)',
+                color: '#0f2419',
+                boxShadow: '0 12px 40px rgba(212,175,55,0.4)',
+                transform: 'scale(1.05)',
+              } : {
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(212,175,55,0.2)',
+                backdropFilter: 'blur(10px)',
+              }}
             >
-              <div className={`text-xs font-bold uppercase tracking-widest mb-1 ${tier.highlight ? 'text-white/70' : 'text-muted-foreground'}`}>
+              <div className="text-xs font-bold uppercase tracking-widest mb-1"
+                style={{ color: tier.highlight ? 'rgba(15,36,25,0.7)' : '#a89060' }}>
                 {tier.range}
               </div>
-              <h3 className={`text-xl font-bold mb-3 ${tier.highlight ? 'text-white' : 'text-foreground'}`}>
+              <h3 className="text-xl font-bold mb-3"
+                style={{ color: tier.highlight ? '#0f2419' : '#f5f0e8', fontFamily: "'Playfair Display', serif" }}>
                 {tier.name}
               </h3>
-              <p className={`text-sm leading-relaxed ${tier.highlight ? 'text-white/90' : 'text-muted-foreground'}`}>
+              <p className="text-sm leading-relaxed"
+                style={{ color: tier.highlight ? 'rgba(15,36,25,0.85)' : '#a89060' }}>
                 {tier.perks}
               </p>
             </div>
@@ -81,10 +100,7 @@ export function EatsPoints() {
 
         {/* CTA */}
         <div className="text-center">
-          <Link
-            href="/register"
-            className="inline-block px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:opacity-90 transition-opacity"
-          >
+          <Link href="/register" className="btn-gold inline-block px-8 py-3 rounded-xl font-semibold text-sm">
             Start Earning Points
           </Link>
         </div>

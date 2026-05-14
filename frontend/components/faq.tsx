@@ -9,7 +9,7 @@ const FAQS = [
   },
   {
     q: 'How do I make a reservation?',
-    a: 'Find a restaurant you love, open its detail page, choose your date, time, and party size, then click "Reserve a Table". You\'ll receive a confirmation immediately. You can view all your upcoming reservations in your profile.',
+    a: "Find a restaurant you love, open its detail page, choose your date, time, and party size, then click \"Reserve a Table\". You'll receive a confirmation immediately. You can view all your upcoming reservations in your profile.",
   },
   {
     q: 'What are Eats Points?',
@@ -25,11 +25,11 @@ const FAQS = [
   },
   {
     q: 'Does Nila only know about restaurants in the database?',
-    a: 'Yes. Nila only recommends restaurants that are listed and verified on SL Eats Connect. This ensures every suggestion is accurate and up to date. If your favourite spot isn\'t listed yet, ask the owner to register as a vendor.',
+    a: "Yes. Nila only recommends restaurants that are listed and verified on SL Eats Connect. This ensures every suggestion is accurate and up to date. If your favourite spot isn't listed yet, ask the owner to register as a vendor.",
   },
   {
     q: 'How do I list my restaurant on SL Eats Connect?',
-    a: 'Click "Join as Vendor" on the homepage or go to /register and select the Vendor option. After creating your account you\'ll have access to the Vendor Dashboard where you can add your restaurant details, menu, photos, and manage reservations.',
+    a: "Click \"Join as Vendor\" on the homepage or go to /register and select the Vendor option. After creating your account you'll have access to the Vendor Dashboard where you can add your restaurant details, menu, photos, and manage reservations.",
   },
   {
     q: 'Is the platform available in Sinhala and Tamil?',
@@ -41,15 +41,20 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
-      <div className="max-w-3xl mx-auto">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0f2419 0%, #0a1a10 100%)' }}>
+      <div className="max-w-3xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Got Questions?</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, #d4af37)' }} />
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#d4af37' }}>Got Questions?</span>
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, #d4af37)' }} />
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", color: '#f5f0e8' }}>
             Frequently Asked Questions
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-lg" style={{ color: '#a89060' }}>
             Everything you need to know about SL Eats Connect.
           </p>
         </div>
@@ -59,21 +64,29 @@ export function FAQ() {
           {FAQS.map((faq, i) => (
             <div
               key={i}
-              className="border border-border rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden transition-all duration-200"
+              style={{
+                background: openIndex === i ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.04)',
+                border: openIndex === i ? '1px solid rgba(212,175,55,0.4)' : '1px solid rgba(212,175,55,0.12)',
+                backdropFilter: 'blur(10px)',
+              }}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted/40 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-4 text-left transition-colors"
               >
-                <span className={`font-semibold text-sm sm:text-base ${openIndex === i ? 'text-primary' : 'text-foreground'}`}>
+                <span className="font-semibold text-sm sm:text-base"
+                  style={{ color: openIndex === i ? '#d4af37' : '#f5f0e8' }}>
                   {faq.q}
                 </span>
-                <span className={`ml-4 flex-shrink-0 text-xl font-light transition-transform duration-200 ${openIndex === i ? 'rotate-45 text-primary' : 'text-muted-foreground'}`}>
+                <span className={`ml-4 flex-shrink-0 text-xl font-light transition-transform duration-200 ${openIndex === i ? 'rotate-45' : ''}`}
+                  style={{ color: openIndex === i ? '#d4af37' : '#6b5a3e' }}>
                   +
                 </span>
               </button>
               {openIndex === i && (
-                <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border pt-4">
+                <div className="px-6 pb-5 text-sm leading-relaxed pt-2"
+                  style={{ color: '#a89060', borderTop: '1px solid rgba(212,175,55,0.15)' }}>
                   {faq.a}
                 </div>
               )}
