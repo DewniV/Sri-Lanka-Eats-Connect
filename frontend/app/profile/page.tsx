@@ -226,9 +226,9 @@ export default function ProfilePage() {
               </div>
             ) : reservations.length === 0 ? (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-12 text-center">
-                <Calendar size={40} className="text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-semibold text-foreground mb-2">No reservations yet</h3>
-                <p className="text-sm text-muted-foreground mb-6">When you book a table, your reservations will appear here.</p>
+                <Calendar size={40} className="mx-auto mb-4" style={{ color: "#a89060" }} />
+                <h3 className="font-semibold mb-2" style={{ color: "#f5f0e8" }}>No reservations yet</h3>
+                <p className="text-sm mb-6" style={{ color: "#a89060" }}>When you book a table, your reservations will appear here.</p>
                 <a href="/restaurants" className="inline-block px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
                   Browse Restaurants
                 </a>
@@ -242,9 +242,9 @@ export default function ProfilePage() {
                     <div key={r._id} className="bg-white rounded-2xl border border-border shadow-sm p-5">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div>
-                          <h3 className="font-bold text-foreground text-lg">{restaurantName}</h3>
+                          <h3 className="font-bold text-lg" style={{ color: "#f5f0e8" }}>{restaurantName}</h3>
                           {restaurantCity && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground mt-0.5">
+                            <div className="flex items-center gap-1 text-sm mt-0.5" style={{ color: "#a89060" }}>
                               <MapPin size={13} /><span>{restaurantCity}</span>
                             </div>
                           )}
@@ -253,7 +253,7 @@ export default function ProfilePage() {
                           {r.status}
                         </span>
                       </div>
-                      <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <div className="mt-4 flex flex-wrap gap-4 text-sm" style={{ color: "#a89060" }}>
                         <div className="flex items-center gap-1.5"><Calendar size={14} /><span>{new Date(r.date).toLocaleDateString('en-LK', { dateStyle: 'medium' })}</span></div>
                         <div className="flex items-center gap-1.5"><Clock size={14} /><span>{r.time}</span></div>
                         <div className="flex items-center gap-1.5"><User size={14} /><span>{r.partySize} {r.partySize === 1 ? 'guest' : 'guests'}</span></div>
