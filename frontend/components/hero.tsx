@@ -27,7 +27,8 @@ export function Hero() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4"
               style={{ fontFamily: "'Playfair Display', serif", color: '#f5f0e8' }}>
               Discover Sri Lanka&apos;s
-              <span className="block gold-text">Finest Restaurants</span>
+              <span className="block gold-text">Restaurants</span>
+              <span className="block text-2xl sm:text-3xl font-medium mt-1" style={{ color: '#a89060', fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>From street food to fine dining</span>
             </h1>
 
             <AnimatedText />

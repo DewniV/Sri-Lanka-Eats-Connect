@@ -226,7 +226,7 @@ export function ChatWidget() {
         style={{ filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.25))' }}
       >
         <div
-          className="rounded-2xl overflow-hidden flex flex-col border border-gray-200"
+          className="rounded-2xl overflow-hidden flex flex-col" style={{ border: "1px solid rgba(212,175,55,0.25)" }}
           style={{ height: '530px', background: '#fff' }}
         >
           {/* ── Header ── */}
@@ -259,15 +259,15 @@ export function ChatWidget() {
               </button>
 
               {showLangMenu && (
-                <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden min-w-[160px] z-10">
-                  <div className="px-3 py-2 text-xs text-gray-400 font-semibold border-b border-gray-100 uppercase tracking-wider">
+                <div className="absolute right-0 top-10 rounded-xl shadow-xl overflow-hidden min-w-[160px] z-10" style={{ background: "#0f2419", border: "1px solid rgba(212,175,55,0.3)" }}>
+                  <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "#a89060", borderBottom: "1px solid rgba(212,175,55,0.15)" }}>
                     Language
                   </div>
                   {(Object.entries(LANGUAGES) as [Lang, typeof LANGUAGES[Lang]][]).map(([code, l]) => (
                     <button
                       key={code}
                       onClick={() => changeLang(code)}
-                      className={`w-full px-3 py-2.5 text-left text-sm hover:bg-gray-50 transition flex items-center gap-2.5 ${
+                      className={`w-full px-3 py-2.5 text-left text-sm transition flex items-center gap-2.5 hover:bg-white/10 ${
                         lang === code ? 'bg-primary/10 text-primary font-semibold' : 'text-gray-700'
                       }`}
                     >
@@ -290,12 +290,12 @@ export function ChatWidget() {
           </div>
 
           {/* ── Messages ── */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: "#0f2419" }}>
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 {/* Avatar */}
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm ${
-                  msg.role === 'assistant' ? 'bg-primary' : 'bg-gray-200'
+                  msg.role === 'assistant' ? 'bg-primary' : 'bg-white/20'
                 }`}>
                   {msg.role === 'assistant'
                     ? <span className="text-white font-bold text-[10px]">N</span>
@@ -306,7 +306,7 @@ export function ChatWidget() {
                 <div className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl shadow-sm ${
                   msg.role === 'user'
                     ? 'bg-primary text-white rounded-tr-sm text-sm leading-relaxed'
-                    : 'bg-white text-gray-800 rounded-tl-sm border border-gray-100'
+                    :  'rounded-tl-sm' 
                 }`}>
                   {msg.role === 'assistant' ? (
                     <MarkdownText content={msg.content} />
@@ -323,7 +323,7 @@ export function ChatWidget() {
                 <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-sm">
                   <span className="text-white font-bold text-[10px]">N</span>
                 </div>
-                <div className="bg-white border border-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1 shadow-sm">
+                <div className="px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1 shadow-sm" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(212,175,55,0.15)" }}>
                   <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -336,7 +336,7 @@ export function ChatWidget() {
 
           {/* ── Suggested queries ── */}
           {messages.length === 1 && (
-            <div className="px-4 py-2 bg-white border-t border-gray-100 shrink-0">
+            <div className="px-4 py-2 shrink-0" style={{ background: "#0a1a10", borderTop: "1px solid rgba(212,175,55,0.15)" }}>
               <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-2">Try asking:</p>
               <div className="flex flex-wrap gap-1.5">
                 {SUGGESTED[lang].map((q, i) => (
@@ -353,7 +353,7 @@ export function ChatWidget() {
           )}
 
           {/* ── Input ── */}
-          <div className="border-t border-gray-100 p-3 flex gap-2 bg-white shrink-0">
+          <div className="border-t p-3 flex gap-2 shrink-0" style={{ background: "#0a1a10", borderColor: "rgba(212,175,55,0.2)" }}>
             <input
               ref={inputRef}
               type="text"
@@ -362,7 +362,7 @@ export function ChatWidget() {
               onKeyDown={handleKeyDown}
               placeholder={LANGUAGES[lang].placeholder}
               disabled={loading}
-              className="flex-1 px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:opacity-60 bg-gray-50"
+              className="flex-1 px-3.5 py-2.5 text-sm rounded-xl focus:outline-none disabled:opacity-60" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(212,175,55,0.3)", color: "#f5f0e8" }}
             />
             <button
               onClick={sendMessage}

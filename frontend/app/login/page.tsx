@@ -63,7 +63,7 @@ export default function LoginPage() {
             style={{ background: 'linear-gradient(135deg, #d4af37, #f0d060)', color: '#1a3a2a' }}>SL</div>
           <div>
             <div className="font-bold text-lg" style={{ color: '#f5f0e8' }}>SL Eats Connect</div>
-            <div className="text-xs tracking-widest uppercase" style={{ color: '#d4af37' }}>Sri Lanka&apos;s Finest</div>
+            <div className="text-xs tracking-widest uppercase" style={{ color: '#d4af37' }}>Eat Local. Eat Sri Lanka.</div>
           </div>
         </div>
 

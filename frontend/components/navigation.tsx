@@ -64,7 +64,7 @@ export function Navigation() {
             </div>
             <div className="flex flex-col leading-tight">
               <span className="font-bold text-base tracking-wide" style={{ color: '#f5f0e8' }}>SL Eats Connect</span>
-              <span className="text-xs font-light tracking-widest uppercase" style={{ color: '#d4af37', letterSpacing: '0.15em' }}>Sri Lanka&apos;s Finest</span>
+              <span className="text-xs font-light tracking-widest uppercase" style={{ color: '#d4af37', letterSpacing: '0.15em' }}>Eat Local. Eat Sri Lanka.</span>
             </div>
           </Link>
 
