@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
 const User = require('../models/User');
+const { EatsPoints, PointsTransaction } = require('../models/EatsPoints');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -47,6 +48,27 @@ async function sendCustomerConfirmationEmail(reservation, restaurantName) {
       html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#c0392b;padding:20px;text-align:center"><h1 style="color:white;margin:0">SL Eats Connect</h1></div><div style="padding:30px;background:#fff"><h2>Your reservation is confirmed! 🎉</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px;font-weight:bold">Restaurant</td><td style="padding:8px">${restaurantName}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold">Name</td><td style="padding:8px">${reservation.customerName}</td></tr><tr><td style="padding:8px;font-weight:bold">Date & Time</td><td style="padding:8px">${dateStr}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold">Party Size</td><td style="padding:8px">${reservation.partySize} people</td></tr>${reservation.specialRequests ? `<tr><td style="padding:8px;font-weight:bold">Special Requests</td><td style="padding:8px">${reservation.specialRequests}</td></tr>` : ''}</table><p style="margin-top:20px;color:#666;font-size:14px">Booked via Nila AI Chatbot on SL Eats Connect</p></div></div>`,
     });
   } catch (err) { console.error('Failed to send customer email:', err.message); }
+}
+
+// Helper: award 100 Eats Points to a customer for a reservation
+async function awardPoints(customerId, reservationId) {
+  try {
+    const POINTS_PER_RESERVATION = 100;
+    await EatsPoints.findOneAndUpdate(
+      { customer: customerId },
+      { $inc: { balance: POINTS_PER_RESERVATION } },
+      { upsert: true, new: true }
+    );
+    await PointsTransaction.create({
+      customer:    customerId,
+      type:        'earn',
+      points:      POINTS_PER_RESERVATION,
+      description: 'Reservation reward',
+      reservation: reservationId,
+    });
+  } catch (err) {
+    console.error('Chatbot points award error:', err.message);
+  }
 }
 
 const tools = [
@@ -97,6 +119,10 @@ async function executeTool(toolName, args) {
     }
     const reservation = await Reservation.create({ restaurant: args.restaurantId, customerName: args.customerName, customerEmail: args.customerEmail || '', customerPhone: args.customerPhone || '', partySize: args.partySize, reservationDate: new Date(args.reservationDate), specialRequests: args.specialRequests || '', source: 'chatbot', status: 'pending', ...(customerId && { customer: customerId }) });
     await Restaurant.findByIdAndUpdate(args.restaurantId, { $inc: { availableTables: -1 }, lastAvailabilityUpdate: new Date() });
+    // Award Eats Points if reservation is linked to a registered user
+    if (customerId) {
+      awardPoints(customerId, reservation._id);
+    }
     notifyVendorOfReservation(reservation, restaurant);
     sendCustomerConfirmationEmail(reservation, restaurant.name);
     const dateStr = new Date(args.reservationDate).toLocaleString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
