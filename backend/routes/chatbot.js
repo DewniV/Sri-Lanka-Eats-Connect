@@ -52,7 +52,7 @@ async function sendCustomerConfirmationEmail(reservation, restaurantName) {
 const tools = [
   { type: 'function', function: { name: 'search_restaurants', description: 'Search for restaurants in Sri Lanka based on city, cuisine type, price range, or name. ALWAYS use this tool when the user asks to find, discover, or recommend restaurants.', parameters: { type: 'object', properties: { city: { type: 'string', description: 'City name in Sri Lanka (e.g., Colombo, Kandy, Galle, Negombo, Jaffna)' }, cuisineType: { type: 'string', description: 'Type of cuisine (e.g., Seafood, Sri Lankan, Indian, Chinese, Fusion)' }, priceRange: { type: 'string', enum: ['budget', 'mid', 'upscale', 'fine'], description: 'Price range' }, keyword: { type: 'string', description: 'Search keyword' } }, required: [] } } },
   { type: 'function', function: { name: 'check_availability', description: 'Check real-time table availability at a specific restaurant. Always call this before make_reservation.', parameters: { type: 'object', properties: { restaurantId: { type: 'string', description: 'The MongoDB ID of the restaurant' }, restaurantName: { type: 'string', description: 'The name of the restaurant' } }, required: ['restaurantId'] } } },
-  { type: 'function', function: { name: 'make_reservation', description: 'Make a table reservation. ONLY call this after collecting: customer name, party size, date, time, AND after user has confirmed the booking summary.', parameters: { type: 'object', properties: { restaurantId: { type: 'string' }, restaurantName: { type: 'string' }, customerName: { type: 'string' }, customerEmail: { type: 'string' }, customerPhone: { type: 'string' }, partySize: { type: 'number' }, reservationDate: { type: 'string', description: 'ISO format date+time e.g. 2026-05-12T20:00:00' }, specialRequests: { type: 'string' } }, required: ['restaurantId', 'restaurantName', 'customerName', 'partySize', 'reservationDate'] } } },
+  { type: 'function', function: { name: 'make_reservation', description: 'Make a table reservation. ONLY call this after collecting: customer name, party size, date, time, AND after user has confirmed the booking summary.', parameters: { type: 'object', properties: { restaurantId: { type: 'string', description: 'The exact 24-character MongoDB ObjectId from search_restaurants result. Never invent or guess this value.' }, restaurantName: { type: 'string' }, customerName: { type: 'string' }, customerEmail: { type: 'string' }, customerPhone: { type: 'string' }, partySize: { type: 'number' }, reservationDate: { type: 'string', description: 'ISO format date+time e.g. 2026-05-12T20:00:00' }, specialRequests: { type: 'string' } }, required: ['restaurantId', 'restaurantName', 'customerName', 'partySize', 'reservationDate'] } } },
   { type: 'function', function: { name: 'get_restaurant_details', description: 'Get detailed information about a specific restaurant.', parameters: { type: 'object', properties: { restaurantId: { type: 'string' } }, required: ['restaurantId'] } } },
 ];
 
@@ -70,6 +70,9 @@ async function executeTool(toolName, args) {
   }
 
   if (toolName === 'check_availability') {
+    if (!args.restaurantId || !/^[a-f0-9]{24}$/i.test(args.restaurantId)) {
+      return { found: false, message: 'Invalid restaurant ID. Please call search_restaurants first and use the exact id field from the results.' };
+    }
     const restaurant = await Restaurant.findById(args.restaurantId).lean();
     if (!restaurant) return { found: false, message: 'Restaurant not found.' };
     // If availableTables is not set by vendor, default to available (assume tables are open)
@@ -78,6 +81,10 @@ async function executeTool(toolName, args) {
   }
 
   if (toolName === 'make_reservation') {
+    // Validate restaurantId is a valid MongoDB ObjectId before querying
+    if (!args.restaurantId || !/^[a-f0-9]{24}$/i.test(args.restaurantId)) {
+      return { success: false, message: 'Invalid restaurant ID. Please search for the restaurant again using search_restaurants and use the exact id from the results.' };
+    }
     const restaurant = await Restaurant.findById(args.restaurantId);
     if (!restaurant) return { success: false, message: 'Restaurant not found.' };
     // Only block if vendor has explicitly set availableTables to 0
@@ -160,7 +167,7 @@ CRITICAL RULES — FOLLOW THESE WITHOUT EXCEPTION:
 ANTI-HALLUCINATION RULES — CRITICAL:
 - You MUST ONLY mention restaurants that were returned by the search_restaurants tool in this conversation
 - NEVER mention, suggest, or describe a restaurant from your training knowledge (e.g. Ministry of Crab, Pedlar's Inn, Poonie's Kitchen, etc.) unless it appeared in a search_restaurants tool result in THIS conversation
-- NEVER invent a restaurant ID — only use the exact "id" field returned by search_restaurants
+- NEVER invent a restaurant ID — the restaurantId you pass to check_availability and make_reservation MUST be the exact 24-character hexadecimal MongoDB ObjectId string from the "id" field in the search_restaurants result. It will look like "6634a2b1c3d4e5f6a7b8c9d0". NEVER use a name, slug, or any other format.
 - If a user asks about a specific restaurant by name, call search_restaurants with that name as the keyword first, then respond based on what the tool returns
 - If search_restaurants returns no results for a city or cuisine, tell the user honestly: "I don't have any restaurants listed in [city] yet on our platform" — do NOT suggest restaurants from your own knowledge
 - The only restaurants that exist on SL Eats Connect are the ones returned by the search_restaurants tool
