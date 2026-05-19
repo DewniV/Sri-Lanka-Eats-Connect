@@ -682,7 +682,7 @@ export default function VendorDashboard() {
                     type="text"
                     value={editForm.name || ''}
                     onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent text-gray-900"
                   />
                 </div>
 
@@ -693,7 +693,7 @@ export default function VendorDashboard() {
                     onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
                     rows={5}
                     placeholder='e.g. "Authentic Sri Lankan rice and curry in Galle, specialising in fresh seafood. Beachfront seating. Vegetarian-friendly. Halal certified."'
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none text-gray-900"
                   />
                   <p className="text-xs text-gray-400 mt-1">
                     Include cuisine style, specialties, ambiance, dietary options, and location highlights for best chatbot results.
@@ -706,7 +706,7 @@ export default function VendorDashboard() {
                     <select
                       value={editForm.city || ''}
                       onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white text-gray-900"
                     >
                       <option value="">Select city</option>
                       {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -719,7 +719,7 @@ export default function VendorDashboard() {
                       value={editForm.cuisineType || ''}
                       onChange={e => setEditForm(f => ({ ...f, cuisineType: e.target.value }))}
                       placeholder="e.g. Sri Lankan, Seafood, Fusion"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent text-gray-900"
                     />
                   </div>
                 </div>
@@ -731,7 +731,7 @@ export default function VendorDashboard() {
                     value={editForm.address || ''}
                     onChange={e => setEditForm(f => ({ ...f, address: e.target.value }))}
                     placeholder="e.g. 45 Galle Road, Colombo 03"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent text-gray-900"
                   />
                 </div>
 
@@ -743,7 +743,7 @@ export default function VendorDashboard() {
                       value={editForm.phone || ''}
                       onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
                       placeholder="+94 11 234 5678"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent text-gray-900"
                     />
                   </div>
                   <div>
@@ -751,7 +751,7 @@ export default function VendorDashboard() {
                     <select
                       value={editForm.priceRange || 'mid'}
                       onChange={e => setEditForm(f => ({ ...f, priceRange: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white text-gray-900"
                     >
                       {PRICE_RANGES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                     </select>
