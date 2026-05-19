@@ -634,7 +634,7 @@ export default function RestaurantDetailPage() {
                       <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">{reviewError}</div>
                     )}
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-2">Rating</label>
                       <div className="flex gap-1">
                         {[1,2,3,4,5].map((star) => (
                           <button
