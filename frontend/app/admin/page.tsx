@@ -279,7 +279,7 @@ export default function AdminPage() {
                     <tbody>
                       {recentReservations.map((r, i) => (
                         <tr key={r._id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          <td className="px-4 py-3 font-medium">{r.customerName}</td>
+                          <td className="px-4 py-3 text-gray-600">{r.customerName}</td>
                           <td className="px-4 py-3 text-gray-600">{r.restaurant?.name || '—'}</td>
                           <td className="px-4 py-3 text-gray-600">{new Date(r.reservationDate).toLocaleDateString('en-LK')}</td>
                           <td className="px-4 py-3 text-gray-600">{r.partySize}</td>
@@ -314,7 +314,7 @@ export default function AdminPage() {
                 <tbody>
                   {users.map((u, i) => (
                     <tr key={u._id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-medium">{u.name}</td>
+                      <td className="px-4 py-3 text-gray-600">{u.name}</td>
                       <td className="px-4 py-3 text-gray-600">{u.email}</td>
                       <td className="px-4 py-3">
                         <select
@@ -362,7 +362,7 @@ export default function AdminPage() {
                 <tbody>
                   {restaurants.map((r, i) => (
                     <tr key={r._id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-medium">{r.name}</td>
+                      <td className="px-4 py-3 text-gray-600">{r.name}</td>
                       <td className="px-4 py-3 text-gray-600">{r.city}</td>
                       <td className="px-4 py-3 text-gray-600">{r.cuisineType}</td>
                       <td className="px-4 py-3 text-gray-600">⭐ {r.averageRating} ({r.totalReviews})</td>
@@ -415,7 +415,7 @@ export default function AdminPage() {
                 <tbody>
                   {reservations.map((r, i) => (
                     <tr key={r._id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-medium">{r.customerName}</td>
+                      <td className="px-4 py-3 text-gray-600">{r.customerName}</td>
                       <td className="px-4 py-3 text-gray-600">{r.restaurant?.name || '—'}</td>
                       <td className="px-4 py-3 text-gray-600">{new Date(r.reservationDate).toLocaleDateString('en-LK')}</td>
                       <td className="px-4 py-3 text-gray-600">{r.partySize}</td>
