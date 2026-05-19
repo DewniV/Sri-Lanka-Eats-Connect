@@ -333,7 +333,7 @@ export default function RestaurantDetailPage() {
               {/* Description */}
               {restaurant.description && (
                 <div>
-                  <h2 className="text-xl font-bold text-foreground mb-3">About</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-3">About</h2>
                   <p className="text-muted-foreground leading-relaxed">{restaurant.description}</p>
                 </div>
               )}
@@ -370,7 +370,7 @@ export default function RestaurantDetailPage() {
 
               {/* Contact info */}
               <div>
-                <h2 className="text-xl font-bold text-foreground mb-4">Contact & Location</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Contact & Location</h2>
                 <div className="space-y-3">
                   {restaurant.address && (
                     <div className="flex items-start gap-3 text-muted-foreground">
@@ -429,7 +429,7 @@ export default function RestaurantDetailPage() {
                 const mapsQuery = encodeURIComponent(`${restaurant.address || restaurant.name}, ${restaurant.city}, Sri Lanka`);
                 return (
                   <div>
-                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-gray-900d mb-4 flex items-center gap-2">
                       <MapPin size={20} className="text-primary" /> Find Us
                     </h2>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
@@ -478,7 +478,7 @@ export default function RestaurantDetailPage() {
             {/* Right column — booking */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 bg-white border border-border rounded-2xl p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-foreground mb-2">Make a Reservation</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Make a Reservation</h2>
                 <p className="text-sm text-muted-foreground mb-5">Book your table at {restaurant.name}</p>
 
                 {/* Success message */}
@@ -618,11 +618,11 @@ export default function RestaurantDetailPage() {
 
             {/* Reviews Section — full width below */}
             <div className="lg:col-span-3 mt-10">
-              <h2 className="text-xl font-bold text-foreground mb-6">Customer Reviews</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
 
               {/* Review form */}
               <div className="bg-muted/30 rounded-2xl border border-border p-6 mb-8">
-                <h3 className="font-semibold text-foreground mb-4">Leave a Review</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">Leave a Review</h3>
                 {reviewSuccess ? (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
                     ✓ Thank you for your review!
