@@ -360,10 +360,10 @@ export default function VendorDashboard() {
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <h3 className="font-semibold text-gray-800 mb-4">Restaurant Summary</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  <div><span className="text-gray-500">City:</span> <span className="font-medium">{restaurant.city || '—'}</span></div>
-                  <div><span className="text-gray-500">Cuisine:</span> <span className="font-medium">{restaurant.cuisineType || '—'}</span></div>
-                  <div><span className="text-gray-500">Price Range:</span> <span className="font-medium capitalize">{restaurant.priceRange || '—'}</span></div>
-                  <div><span className="text-gray-500">Rating:</span> <span className="font-medium">{restaurant.averageRating?.toFixed(1) || '0.0'} ⭐ ({restaurant.totalReviews} reviews)</span></div>
+                  <div><span className="text-gray-900">City:</span> <span className="font-medium">{restaurant.city || '—'}</span></div>
+                  <div><span className="text-gray-900">Cuisine:</span> <span className="font-medium">{restaurant.cuisineType || '—'}</span></div>
+                  <div><span className="text-gray-900">Price Range:</span> <span className="font-medium capitalize">{restaurant.priceRange || '—'}</span></div>
+                  <div><span className="text-gray-900">Rating:</span> <span className="font-medium">{restaurant.averageRating?.toFixed(1) || '0.0'} ⭐ ({restaurant.totalReviews} reviews)</span></div>
                   <div>
                     <span className="text-gray-500">Tables Available:</span>{' '}
                     <span className={`font-medium ${restaurant.availableTables === 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -677,7 +677,7 @@ export default function VendorDashboard() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Restaurant Name</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-1">Restaurant Name</label>
                   <input
                     type="text"
                     value={editForm.name || ''}
@@ -687,7 +687,7 @@ export default function VendorDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-1">Description</label>
                   <textarea
                     value={editForm.description || ''}
                     onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
@@ -702,7 +702,7 @@ export default function VendorDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">City</label>
                     <select
                       value={editForm.city || ''}
                       onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))}
@@ -713,7 +713,7 @@ export default function VendorDashboard() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cuisine Type</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">Cuisine Type</label>
                     <input
                       type="text"
                       value={editForm.cuisineType || ''}
@@ -725,7 +725,7 @@ export default function VendorDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-1">Address</label>
                   <input
                     type="text"
                     value={editForm.address || ''}
@@ -737,7 +737,7 @@ export default function VendorDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">Phone</label>
                     <input
                       type="tel"
                       value={editForm.phone || ''}
@@ -747,7 +747,7 @@ export default function VendorDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">Price Range</label>
                     <select
                       value={editForm.priceRange || 'mid'}
                       onChange={e => setEditForm(f => ({ ...f, priceRange: e.target.value }))}
