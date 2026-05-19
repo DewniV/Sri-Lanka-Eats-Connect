@@ -196,7 +196,7 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   placeholder="e.g. Priya Fernando"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                   style={{ '--tw-ring-color': 'oklch(0.585 0.22 29.234)' } as React.CSSProperties}
                 />
               </div>
@@ -210,7 +210,7 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   placeholder="you@example.com"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                 />
               </div>
 
@@ -225,7 +225,7 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       required
                       placeholder="Min. 6 characters"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent pr-10"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent pr-10"
                     />
                     <button
                       type="button"
@@ -251,7 +251,7 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       required
                       placeholder="Repeat password"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent pr-10"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent pr-10"
                     />
                     <button
                       type="button"
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     required={role === 'vendor'}
                     placeholder="e.g. The Spice Garden"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                   />
                 </div>
 
@@ -336,7 +336,7 @@ export default function RegisterPage() {
                       value={form.restaurantCity}
                       onChange={handleChange}
                       required={role === 'vendor'}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent bg-white"
                     >
                       <option value="">Select city</option>
                       {CITIES.map(c => (
@@ -352,7 +352,7 @@ export default function RegisterPage() {
                       value={form.restaurantCuisineType}
                       onChange={handleChange}
                       placeholder="e.g. Sri Lankan, Seafood"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -365,7 +365,7 @@ export default function RegisterPage() {
                     value={form.restaurantAddress}
                     onChange={handleChange}
                     placeholder="e.g. 45 Galle Road, Colombo 03"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                   />
                 </div>
 
@@ -378,7 +378,7 @@ export default function RegisterPage() {
                       value={form.restaurantPhone}
                       onChange={handleChange}
                       placeholder="e.g. +94 11 234 5678"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -389,7 +389,7 @@ export default function RegisterPage() {
                       value={form.restaurantEmail}
                       onChange={handleChange}
                       placeholder="Defaults to your account email"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -401,7 +401,7 @@ export default function RegisterPage() {
                       name="restaurantPriceRange"
                       value={form.restaurantPriceRange}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent bg-white"
                     >
                       {PRICE_RANGES.map(p => (
                         <option key={p.value} value={p.value}>{p.label}</option>
@@ -421,7 +421,7 @@ export default function RegisterPage() {
                       min="1"
                       max="200"
                       placeholder="10"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
                     />
                   </div>
                 </div>
