@@ -429,7 +429,7 @@ export default function RestaurantDetailPage() {
                 const mapsQuery = encodeURIComponent(`${restaurant.address || restaurant.name}, ${restaurant.city}, Sri Lanka`);
                 return (
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900d mb-4 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <MapPin size={20} className="text-primary" /> Find Us
                     </h2>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
@@ -515,7 +515,7 @@ export default function RestaurantDetailPage() {
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">Your name *</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">Your name *</label>
                       <input
                         name="customerName"
                         type="text"
@@ -528,7 +528,7 @@ export default function RestaurantDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">Email</label>
                       <input
                         name="customerEmail"
                         type="email"
@@ -540,7 +540,7 @@ export default function RestaurantDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">Phone</label>
                       <input
                         name="customerPhone"
                         type="tel"
@@ -552,7 +552,7 @@ export default function RestaurantDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-gray-900 mb-1">
                         <span className="flex items-center gap-1"><Users size={14} /> Party size *</span>
                       </label>
                       <select
@@ -569,7 +569,7 @@ export default function RestaurantDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-gray-900 mb-1">
                         <span className="flex items-center gap-1"><Clock size={14} /> Date & time *</span>
                       </label>
                       <input
@@ -584,7 +584,7 @@ export default function RestaurantDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">Special requests</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">Special requests</label>
                       <textarea
                         name="specialRequests"
                         value={formData.specialRequests}
