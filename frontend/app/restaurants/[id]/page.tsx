@@ -523,7 +523,7 @@ export default function RestaurantDetailPage() {
                         value={formData.customerName}
                         onChange={handleFormChange}
                         placeholder="Full name"
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
 
@@ -535,7 +535,7 @@ export default function RestaurantDetailPage() {
                         value={formData.customerEmail}
                         onChange={handleFormChange}
                         placeholder="your@email.com"
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
 
@@ -547,7 +547,7 @@ export default function RestaurantDetailPage() {
                         value={formData.customerPhone}
                         onChange={handleFormChange}
                         placeholder="+94 77 123 4567"
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
 
@@ -560,7 +560,7 @@ export default function RestaurantDetailPage() {
                         required
                         value={formData.partySize}
                         onChange={handleFormChange}
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white text-gray-900"
                       >
                         {[1,2,3,4,5,6,7,8,9,10].map(n => (
                           <option key={n} value={n}>{n} {n === 1 ? 'person' : 'people'}</option>
@@ -579,7 +579,7 @@ export default function RestaurantDetailPage() {
                         min={minDate}
                         value={formData.reservationDate}
                         onChange={handleFormChange}
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
 
@@ -591,7 +591,7 @@ export default function RestaurantDetailPage() {
                         onChange={handleFormChange}
                         placeholder="Allergies, dietary requirements, occasion..."
                         rows={3}
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none text-gray-900"
                       />
                     </div>
 
@@ -665,7 +665,7 @@ export default function RestaurantDetailPage() {
                         onChange={(e) => setReviewComment(e.target.value)}
                         placeholder="Share your dining experience..."
                         rows={3}
-                        className="w-full px-3 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none bg-white"
+                        className="w-full px-3 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none bg-white text-gray-900"
                       />
                     </div>
                     <button

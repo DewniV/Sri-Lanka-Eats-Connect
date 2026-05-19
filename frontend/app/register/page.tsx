@@ -321,7 +321,7 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     rows={4}
                     placeholder='e.g. "Authentic Sri Lankan rice and curry in Galle, specialising in fresh seafood. Beachfront seating with ocean views. Vegetarian-friendly. Halal certified."'
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                   />
                   <p className="text-xs text-gray-400 mt-1">
                     A good description helps our AI chatbot Nila recommend your restaurant to the right customers.
